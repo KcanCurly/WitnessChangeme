@@ -1,0 +1,16 @@
+<div class="container login">
+  <h1 class="mb-5">Login to web-scraping.dev</h1>
+  
+  <form action="/api/login" method="POST">
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input name="username" type="text" class="form-control" placeholder="user123"  aria-label="Username" />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input name="password" type="text" class="form-control" placeholder="password"  aria-label="Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  
+</div>
