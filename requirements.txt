@@ -1,0 +1,6 @@
+selenium
+opencv-python
+requests
+pyautogui
+pyscreeze
+pillow

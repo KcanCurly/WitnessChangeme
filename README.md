@@ -1,1 +1,0 @@
-Witness Changme scans given URLs to find out if they are using default credentials and if so, it will take picture of it and report it to you.
