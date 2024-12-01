@@ -3,10 +3,15 @@ import os
 import importlib.util
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor   
+import pyautogui._pyautogui_x11
 import requests
 from witnesschangeme.utils import append_random_characters
 from pyautogui import locate
+import pyautogui
 from witnesschangeme.selenium_driver import SeleniumDriver
+from pyvirtualdisplay.display import Display
+import Xlib.display
+
 
 def authcheck(url, template, driver, output_folder):
     headers = {
@@ -52,6 +57,12 @@ def main():
     parser.add_argument("--url", required=True, help="Target URL to test.")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     args = parser.parse_args()
+    
+    # Start fake display
+    disp = Display(visible=True, size=(1920,1080), backend="xvfb", use_xauth=True)
+    disp.start()
+    pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
+
 
     # Load all templates
     templates = {}

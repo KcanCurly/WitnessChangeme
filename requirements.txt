@@ -4,3 +4,5 @@ requests
 pyautogui
 pyscreeze
 pillow
+pyvirtualdisplay
+python-xlib
