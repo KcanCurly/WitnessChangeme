@@ -1,2 +1,4 @@
 include templates/*/creds.txt
 include templates/*/images/*
+include temp
+include temp/*
