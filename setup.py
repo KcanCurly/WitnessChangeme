@@ -21,6 +21,7 @@ setup(
         "Intended Audience :: Information Technology",
         "Topic :: Security",
     ],
+    include_package_data=True,
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
