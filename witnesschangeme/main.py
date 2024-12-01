@@ -32,33 +32,34 @@ def authcheck(url, template, driver, output_folder):
     driver.driver.get(url)
     
     p = append_random_characters("ss_") + ".png"
-    p = Path(__file__).resolve().parent.parent / "temp" / p
-    driver.driver.save_screenshot(p)
-    
-    try:
-        template_path = template["image_path"]
-        template_path = os.path.join(template_path, "1.png")
+    with importlib.resources.path("temp", "") as b:
+        p = os.path.join(b, p)
+        driver.driver.save_screenshot(p)
+        
+        try:
+            template_path = template["image_path"]
+            template_path = os.path.join(template_path, "1.png")
 
-        locate(template_path, p.__str__(), confidence=template["threshold"])
-        
-        found = False
-        
-        for username, password in template["credentials"]:
-            if template["verify_login"](driver, username, password):
-                print(f"Login successful: {username}", f"{output_folder}/successful_logins.txt")
-                found = True
-                # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                break
-        
-        if not found:
-            print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
-            return
-        
-    except Exception as e:
-        raise e
+            locate(template_path, p.__str__(), confidence=template["threshold"])
+            
+            found = False
+            
+            for username, password in template["credentials"]:
+                if template["verify_login"](driver, username, password):
+                    print(f"Login successful: {username}", f"{output_folder}/successful_logins.txt")
+                    found = True
+                    # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
+                    break
+            
+            if not found:
+                print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
+                return
+            
+        except Exception as e:
+            raise e
 
-    finally:
-        os.remove(p)
+        finally:
+            os.remove(p)
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
