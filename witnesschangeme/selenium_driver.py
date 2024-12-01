@@ -16,7 +16,6 @@ class SeleniumDriver:
     def _initialize_driver(self):
         """Set up and return a Selenium WebDriver instance."""
         firefox_options = Options()
-        firefox_options.binary_location = r'C:\Users\Admin\Downloads\geckodriver-v0.35.0-win32\geckodriver.exe'
         firefox_options.add_argument("--disable-gpu")
         firefox_options.add_argument("--no-sandbox")
         firefox_options.add_argument("--disable-dev-shm-usage")
