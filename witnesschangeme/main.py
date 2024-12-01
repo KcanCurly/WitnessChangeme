@@ -1,8 +1,10 @@
 import argparse
 import importlib.resources
+import importlib.resources.simple
 import os
 import importlib.util
 import importlib
+import pathlib
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor   
 import requests
@@ -35,7 +37,8 @@ def authcheck(url, template, driver, output_folder):
     
     try:
         template_path = template["image_path"]
-        template_path += r"\1.png"
+        template_path = os.path.join(template_path, "1.png")
+
         locate(template_path, p.__str__(), confidence=template["threshold"])
         
         found = False
@@ -69,30 +72,18 @@ def main():
         disp.start()
         pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
 
-    with importlib.resources.path("templates", "") as a:
-        print(a)
-
-
-            
-
-    
-    return
-    # Load all templates
     templates = {}
-    current_script = Path(__file__).resolve()
-    base_path = os.path.join(current_script.parent.parent, "templates")
-    template_folders = []
-    for folder in os.listdir(base_path):
-        if os.path.isdir(os.path.join(base_path, folder)):
-            template_folders.append(folder)
-    
-    for template in template_folders:        
-        template_path = os.path.join(Path(__file__).resolve().parent.parent, "templates", template, "template.py")
-        spec = importlib.util.spec_from_file_location("template", template_path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        t = module.get_template()
-        templates[folder] = t
+
+    with importlib.resources.path("templates", "") as a:
+            
+        for item in a.iterdir():
+            if not item.name.startswith("__"):
+                spec = importlib.util.spec_from_file_location(item.name, os.path.join(a, item.name, "template.py"))
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                t = module.get_template()
+                templates[item.name] = t
+                
 
     print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
     

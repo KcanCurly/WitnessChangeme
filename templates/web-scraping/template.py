@@ -1,4 +1,6 @@
 import os
+import importlib
+from pathlib import Path
 from selenium.webdriver.common.by import By
 
 def verify_login(driver, username, password):
@@ -21,15 +23,16 @@ def verify_login(driver, username, password):
 
 def get_template():
     # Load credentials and images dynamically
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    creds_file = os.path.join(current_dir, "creds.txt")
-    images_folder = os.path.join(current_dir, "images")
-
-    with open(creds_file, "r") as f:
-        credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+    with importlib.resources.path("templates", "") as a:
+        print(a)
+        b = os.path.join(a, "web-scraping", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+            
+        i  = os.path.join(a, "web-scraping", "images")
 
     return {
-        "image_path": images_folder,
+        "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
         "threshold": 0.5
