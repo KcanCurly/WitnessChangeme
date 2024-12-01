@@ -20,6 +20,7 @@ class SeleniumDriver:
         firefox_options.add_argument("--no-sandbox")
         firefox_options.add_argument("--disable-dev-shm-usage")
         firefox_options.add_argument("--headless")
+        firefox_options.add_argument("--window-size=1920,1080")
 
         # Enable request interception to handle redirects
         caps = DesiredCapabilities.FIREFOX
