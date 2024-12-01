@@ -1,3 +1,4 @@
+setuptools
 selenium
 opencv-python
 requests

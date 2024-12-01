@@ -24,7 +24,7 @@ setup(
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "witnesschangeme=witnesschangeme.main:main",
+            "witnesschangeme=main:main2",
         ],
     },
 )

@@ -1,16 +1,21 @@
 import argparse
+import importlib.resources
 import os
 import importlib.util
+import importlib
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor   
-import pyautogui._pyautogui_x11
 import requests
 from witnesschangeme.utils import append_random_characters
 from pyautogui import locate
 import pyautogui
 from witnesschangeme.selenium_driver import SeleniumDriver
-from pyvirtualdisplay.display import Display
-import Xlib.display
+
+if os.name == "posix":
+    from pyvirtualdisplay.display import Display
+    import Xlib.display
+
+from pkg_resources import resource_string, resource_listdir, resource_isdir
 
 
 def authcheck(url, template, driver, output_folder):
@@ -58,12 +63,20 @@ def main():
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     args = parser.parse_args()
     
-    # Start fake display
-    disp = Display(visible=True, size=(1920,1080), backend="xvfb", use_xauth=True)
-    disp.start()
-    pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
+    if os.name == "posix":
+        # Start fake display
+        disp = Display(visible=True, size=(1920,1080), backend="xvfb", use_xauth=True)
+        disp.start()
+        pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
+
+    with importlib.resources.path("templates", "") as a:
+        print(a)
 
 
+            
+
+    
+    return
     # Load all templates
     templates = {}
     current_script = Path(__file__).resolve()
