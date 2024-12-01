@@ -4,9 +4,9 @@ import importlib.util
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor   
 import requests
-from utils import append_random_characters
+from witnesschangeme.utils import append_random_characters
 from pyautogui import locate
-from selenium_driver import SeleniumDriver
+from witnesschangeme.selenium_driver import SeleniumDriver
 
 def authcheck(url, template, driver, output_folder):
     headers = {
