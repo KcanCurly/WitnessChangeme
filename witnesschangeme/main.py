@@ -12,6 +12,7 @@ from witnesschangeme.utils import append_random_characters
 from pyautogui import locate
 import pyautogui
 from witnesschangeme.selenium_driver import SeleniumDriver
+from PIL import Image
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -34,7 +35,7 @@ def authcheck(url, template, driver, output_folder):
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
         p = os.path.join(b, p)
-        driver.driver.save_screenshot(p)
+        driver.driver.save_full_page_screenshot(p)
         
         try:
             template_path = template["image_path"]

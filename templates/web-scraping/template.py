@@ -24,7 +24,7 @@ def verify_login(driver, username, password):
 def get_template():
     # Load credentials and images dynamically
     with importlib.resources.path("templates", "") as a:
-        print(a)
+
         b = os.path.join(a, "web-scraping", "creds.txt")
         with open(b, "r") as f:
             credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
