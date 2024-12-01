@@ -5,4 +5,5 @@ pyautogui
 pyscreeze
 pillow
 pyvirtualdisplay
+xlib
 python-xlib

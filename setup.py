@@ -12,16 +12,7 @@ setup(
     description="Witnesschangeme - A tool to test website logins using Selenium and pyautogui.",
     author="KcanCurly",
     packages=find_packages(),
-    install_requires=[
-        "selenium",
-        "opencv-python",
-        "requests",
-        "pyautogui",
-        "pyscreeze",
-        "pillow",
-        "pyvirtualdisplay",
-        "python-xlib"
-        ],
+    install_requires=parse_requirements("requirements.txt"),
     url="https://github.com/KcanCurly/witnesschangeme",
     classifiers=[
         "Programming Language :: Python :: 3",
