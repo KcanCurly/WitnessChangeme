@@ -43,31 +43,31 @@ def authcheck(url, template, driver, output_folder):
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
 
-            try:
-                locate(template_path, p.__str__(), confidence=template["threshold"])
+            # try:
+            locate(template_path, p.__str__(), confidence=template["threshold"])
 
+        
+            found = False
             
-                found = False
-                
-                for username, password in template["credentials"]:
-                    if template["verify_login"](driver, username, password):
-                        print(f"Login successful: {username}", f"{output_folder}/successful_logins.txt")
-                        found = True
-                        # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                        break
-                
-                if not found:
-                    print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
-                    return
+            for username, password in template["credentials"]:
+                if template["verify_login"](driver, username, password):
+                    print(f"Login successful: {username}", f"{output_folder}/successful_logins.txt")
+                    found = True
+                    # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
+                    break
             
-            except pyautogui.ImageNotFoundException as a:
-                print(f"{template["name"]} failed")
-                print(a)
-            except Exception:
-                pass
+            if not found:
+                print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
+                return
+            
+            # except pyautogui.ImageNotFoundException as a:
+            #    print(f"{template["name"]} failed")
+            #    print(a)
+            # except Exception:
+            #    pass
 
         except Exception as e:
-            raise e
+            print(e)
 
         finally:
             os.remove(p)
