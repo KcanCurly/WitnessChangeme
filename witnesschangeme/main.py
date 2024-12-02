@@ -66,7 +66,7 @@ def authcheck(url, template, driver, output_folder):
             #    print(a)
             # except Exception:
             #    pass
-        except pyscreeze.ImageNotFoundException as a:
+        except pyautogui.ImageNotFoundException as a:
             print("a")
             print(a)
 
