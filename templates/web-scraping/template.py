@@ -32,6 +32,7 @@ def get_template():
         i  = os.path.join(a, "web-scraping", "images")
 
     return {
+        "name": "EXAMPLE",
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,

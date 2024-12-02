@@ -13,13 +13,15 @@ from pyautogui import locate
 import pyautogui
 from witnesschangeme.selenium_driver import SeleniumDriver
 from PIL import Image
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
     import Xlib.display
 
 from pkg_resources import resource_string, resource_listdir, resource_isdir
-
+disable_warnings(InsecureRequestWarning)
 
 def authcheck(url, template, driver, output_folder):
     headers = {
@@ -30,7 +32,6 @@ def authcheck(url, template, driver, output_folder):
         print(f"{url} returned {response.status_code}", f"{output_folder}/invalid_urls.txt")
         return
     
-    print(driver)
     driver.driver.get(url)
     
     p = append_random_characters("ss_") + ".png"
@@ -59,7 +60,10 @@ def authcheck(url, template, driver, output_folder):
                     print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
                     return
             
-            except Exception:
+            except pyautogui.ImageNotFoundException as e:
+                print(f"{template["name"]} failed")
+                print(e)
+            except Exception as e:
                 pass
 
         except Exception as e:
