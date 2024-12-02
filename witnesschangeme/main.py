@@ -44,8 +44,7 @@ def authcheck(url, template, driver, output_folder):
 
             try:
                 locate(template_path, p.__str__(), confidence=template["threshold"])
-            except Exception:
-                pass
+
             
             found = False
             
@@ -59,7 +58,9 @@ def authcheck(url, template, driver, output_folder):
             if not found:
                 print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
                 return
-            
+        except Exception:
+            pass
+
         except Exception as e:
             raise e
 
