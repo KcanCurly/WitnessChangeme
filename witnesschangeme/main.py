@@ -42,7 +42,7 @@ def authcheck(url, template, driver, output_folder):
         try:
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
-            pyautogui.useImageNotFoundException()
+            
             # try:
             locate(template_path, p.__str__(), confidence=template["threshold"])
 
@@ -77,7 +77,7 @@ def main():
     parser.add_argument("--url", required=True, help="Target URL to test.")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     args = parser.parse_args()
-    
+    pyautogui.useImageNotFoundException()
     if os.name == "posix":
         # Start fake display
         disp = Display(visible=True, size=(1920,1080), backend="xvfb", use_xauth=True)
