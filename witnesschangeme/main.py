@@ -42,7 +42,7 @@ def authcheck(url, template, driver, output_folder):
         try:
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
-
+            pyautogui.useImageNotFoundException()
             # try:
             locate(template_path, p.__str__(), confidence=template["threshold"])
 
