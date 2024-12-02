@@ -17,16 +17,16 @@ class SeleniumDriver:
         try:
             """Set up and return a Selenium WebDriver instance."""
             firefox_options = Options()
-            firefox_capabilities = webdriver.DesiredCapabilities().FIREFOX
-            firefox_capabilities["acceptInsecureCerts"] = True
+
             firefox_options.add_argument("--disable-gpu")
             firefox_options.add_argument("--no-sandbox")
             firefox_options.add_argument("--disable-dev-shm-usage")
             firefox_options.add_argument("--headless")
             firefox_options.add_argument("--width=1920")
             firefox_options.add_argument("--height=1080")
+            firefox_options.accept_insecure_certs = True
 
-            driver = webdriver.Firefox(options=firefox_options, DesiredCapabilities=firefox_capabilities)
+            driver = webdriver.Firefox(options=firefox_options)
 
             driver.set_page_load_timeout(self.timeout)
             return driver
