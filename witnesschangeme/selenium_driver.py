@@ -24,7 +24,7 @@ class SeleniumDriver:
             firefox_options.add_argument("--headless")
             firefox_options.add_argument("--width=1920")
             firefox_options.add_argument("--height=1080")
-            firefox_options.accept_insecure_certs = True
+            firefox_options.add_argument("--ignore-certificate-errors")
 
             driver = webdriver.Firefox(options=firefox_options)
 
