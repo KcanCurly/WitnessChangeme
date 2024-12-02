@@ -12,7 +12,7 @@ def verify_login(driver, username, password):
         protocol, rest = currenturl.split("://")
 
         newurl = f"{protocol}://{username}:{password}@{rest}"
-        driver.driver.get(currenturl)
+        driver.driver.get(newurl)
 
 
 
