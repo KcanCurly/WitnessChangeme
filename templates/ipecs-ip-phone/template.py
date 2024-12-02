@@ -25,11 +25,11 @@ def get_template():
     # Load credentials and images dynamically
     with importlib.resources.path("templates", "") as a:
 
-        b = os.path.join(a, "web-scraping", "creds.txt")
+        b = os.path.join(a, "ipecs-ip-phone", "creds.txt")
         with open(b, "r") as f:
             credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
             
-        i  = os.path.join(a, "web-scraping", "images")
+        i  = os.path.join(a, "ipecs-ip-phone", "images")
 
     return {
         "name": "IPECS IP PHONE",
