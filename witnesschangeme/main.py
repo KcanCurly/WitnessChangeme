@@ -65,6 +65,8 @@ def authcheck(url, template, driver, output_folder):
             #    print(a)
             # except Exception:
             #    pass
+        except pyautogui.ImageNotFoundException as a:
+            print(a)
 
         except Exception as e:
             print(e)
@@ -77,7 +79,7 @@ def main():
     parser.add_argument("--url", required=True, help="Target URL to test.")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     args = parser.parse_args()
-    pyautogui.useImageNotFoundException()
+    pyautogui.useImageNotFoundException(True)
     if os.name == "posix":
         # Start fake display
         disp = Display(visible=True, size=(1920,1080), backend="xvfb", use_xauth=True)
