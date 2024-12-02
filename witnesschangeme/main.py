@@ -30,6 +30,7 @@ def authcheck(url, template, driver, output_folder):
         print(f"{url} returned {response.status_code}", f"{output_folder}/invalid_urls.txt")
         return
     
+    print(driver)
     driver.driver.get(url)
     
     p = append_random_characters("ss_") + ".png"
