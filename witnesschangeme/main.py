@@ -25,7 +25,7 @@ def authcheck(url, template, driver, output_folder):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
-    response = requests.get(url, allow_redirects=True, headers=headers)
+    response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
     if response.status_code >= 400:
         print(f"{url} returned {response.status_code}", f"{output_folder}/invalid_urls.txt")
         return
