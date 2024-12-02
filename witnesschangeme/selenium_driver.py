@@ -14,23 +14,27 @@ class SeleniumDriver:
         self.driver = self._initialize_driver()
 
     def _initialize_driver(self):
-        """Set up and return a Selenium WebDriver instance."""
-        firefox_options = Options()
-        firefox_options.add_argument("--disable-gpu")
-        firefox_options.add_argument("--no-sandbox")
-        firefox_options.add_argument("--disable-dev-shm-usage")
-        firefox_options.add_argument("--headless")
-        firefox_options.add_argument("--width=1920")
-        firefox_options.add_argument("--height=1080")
+        try:
+            """Set up and return a Selenium WebDriver instance."""
+            firefox_options = Options()
+            firefox_options.add_argument("--disable-gpu")
+            firefox_options.add_argument("--no-sandbox")
+            firefox_options.add_argument("--disable-dev-shm-usage")
+            firefox_options.add_argument("--headless")
+            firefox_options.add_argument("--width=1920")
+            firefox_options.add_argument("--height=1080")
 
-        # Enable request interception to handle redirects
-        caps = DesiredCapabilities.FIREFOX
-        caps["goog:loggingPrefs"] = {"performance": "ALL"}
+            # Enable request interception to handle redirects
+            caps = DesiredCapabilities.FIREFOX
+            caps["goog:loggingPrefs"] = {"performance": "ALL"}
 
-        driver = webdriver.Firefox(options=firefox_options)
+            driver = webdriver.Firefox(options=firefox_options)
 
-        driver.set_page_load_timeout(self.timeout)
-        return driver
+            driver.set_page_load_timeout(self.timeout)
+            return driver
+        except Exception as e:
+            print(e)
+
 
 
     def quit(self):
