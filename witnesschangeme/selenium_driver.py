@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 class SeleniumDriver:
@@ -17,7 +18,6 @@ class SeleniumDriver:
         try:
             """Set up and return a Selenium WebDriver instance."""
             firefox_options = Options()
-
             firefox_options.add_argument("--disable-gpu")
             firefox_options.add_argument("--no-sandbox")
             firefox_options.add_argument("--disable-dev-shm-usage")

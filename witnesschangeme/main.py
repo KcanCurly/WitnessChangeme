@@ -42,7 +42,10 @@ def authcheck(url, template, driver, output_folder):
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
 
-            locate(template_path, p.__str__(), confidence=template["threshold"])
+            try:
+                locate(template_path, p.__str__(), confidence=template["threshold"])
+            except Exception:
+                pass
             
             found = False
             
