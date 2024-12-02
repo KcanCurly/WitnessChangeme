@@ -15,6 +15,7 @@ from witnesschangeme.selenium_driver import SeleniumDriver
 from PIL import Image
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
+import pyscreeze
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -65,7 +66,8 @@ def authcheck(url, template, driver, output_folder):
             #    print(a)
             # except Exception:
             #    pass
-        except pyautogui.ImageNotFoundException as a:
+        except pyscreeze.ImageNotFoundException as a:
+            print("a")
             print(a)
 
         except Exception as e:
