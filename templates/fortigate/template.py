@@ -7,9 +7,9 @@ def verify_login(driver, username, password):
     # Logic to verify login success
     try:
 
-        username_field = driver.find_element(By.ID, "username")
-        password_field = driver.find_element(By.ID, "secretkey")
-        login_button = driver.find_element(By.ID, "login_button")
+        username_field = driver.driver.find_element(By.ID, "username")
+        password_field = driver.driver.find_element(By.ID, "secretkey")
+        login_button = driver.driver.find_element(By.ID, "login_button")
 
         username_field.send_keys(username)
         password_field.send_keys(password)
