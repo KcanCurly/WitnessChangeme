@@ -60,15 +60,6 @@ def authcheck(url, template, driver, output_folder):
             if not found:
                 print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
                 return
-            
-            # except pyautogui.ImageNotFoundException as a:
-            #    print(f"{template["name"]} failed")
-            #    print(a)
-            # except Exception:
-            #    pass
-        except pyautogui.ImageNotFoundException as a:
-            print("a")
-            print(a)
 
         except Exception as e:
             print(e)
