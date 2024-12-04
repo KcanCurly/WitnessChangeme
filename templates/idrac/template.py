@@ -42,6 +42,6 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
-        "threshold": 0.2
+        "threshold": 0.5
     }
     
