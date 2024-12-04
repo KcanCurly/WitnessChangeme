@@ -24,49 +24,49 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, template, driver, output_folder):
+def authcheck(url, templates, driver, output_folder):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
     if response.status_code >= 400:
-        print(f"{url} returned {response.status_code}", f"{output_folder}/invalid_urls.txt")
+        print(f"{url} returned {response.status_code}")
         return
     
     driver.driver.get(url)
-    print(driver.driver.current_url)
     
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
         p = os.path.join(b, p)
         driver.driver.save_full_page_screenshot(p)
-        
-        try:
-            template_path = template["image_path"]
-            template_path = os.path.join(template_path, "1.png")
-            
-            # try:
-            locate(template_path, p.__str__(), confidence=template["threshold"])
-            print(f"{template["name"]} matched, trying credentials")
-        
-            found = False
-            
-            for username, password in template["credentials"]:
-                if template["verify_login"](driver, username, password):
-                    print(f"Login successful: {username}")
-                    found = True
-                    # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                    break
-            
-            if not found:
-                print(f"Login failed")
-                return
 
-        except Exception as e:
-            print(e)
+        for template_name, template in templates.items():
+        
+            try:
+                template_path = template["image_path"]
+                template_path = os.path.join(template_path, "1.png")
+                
+                # try:
+                locate(template_path, p.__str__(), confidence=template["threshold"])
+                print(f"{template["name"]} matched, trying credentials")
+            
+                found = False
+                
+                for username, password in template["credentials"]:
+                    if template["verify_login"](driver, username, password):
+                        print(f"Login successful: {username}")
+                        found = True
+                        # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
+                        break
+                
+                if not found:
+                    print(f"Login failed")
+                    return
 
-        finally:
-            os.remove(p)
+            except Exception as e:
+                print(e)
+
+        # os.remove(p)
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
@@ -103,16 +103,13 @@ def main():
     if os.path.isfile(args.url):
         with open(args.url, 'r') as file:
             for line in file:
-                for template_name, template in templates.items():
-                    print(f"Trying template: {template_name} for {line}")
-                    authcheck(line, template, driver, args.output_dir)
+                authcheck(line, templates, driver, args.output_dir)
+                    
 
                     
     # If given url is simply a website, run the templates on the website
     else:
-        for template_name, template in templates.items():
-            print(f"Trying template: {template_name}")
-            authcheck(args.url, template, driver, args.output_dir)
+        authcheck(args.url, templates, driver, args.output_dir)
     
     print("Quiting Selenium Driver")        
     driver.quit()
