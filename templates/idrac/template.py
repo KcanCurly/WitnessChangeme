@@ -11,6 +11,7 @@ def verify_login(driver, username, password):
     try:
 
 
+
         username_field = driver.driver.find_element(By.NAME, "username")
         password_field = driver.driver.find_element(By.NAME, "password")
         login_button = driver.driver.find_element(By.XPATH, "//button[@type='submit']")

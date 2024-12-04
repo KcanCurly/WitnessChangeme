@@ -12,6 +12,9 @@ from witnesschangeme.selenium_driver import SeleniumDriver
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.expected_conditions import all_of
+from selenium.webdriver.common.by import By
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -20,7 +23,7 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver, output_folder):
+def authcheck(url, templates, driver: SeleniumDriver, output_folder):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -31,9 +34,18 @@ def authcheck(url, templates, driver, output_folder):
     
     driver.driver.get(url)
 
-    WebDriverWait(driver.driver, 10).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
+    # IDRAC HACK
+    if driver.driver.current_url.endswith("/restgui/start.html"):
+        WebDriverWait(driver.driver, 15).until(
+            all_of(
+                EC.presence_of_element_located((By.NAME, "username")),
+                EC.presence_of_element_located((By.NAME, "password")),
+                EC.presence_of_element_located((By.XPATH, "//button[@type='submit']"))
+            )
+           
+        )
+
+
     
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
