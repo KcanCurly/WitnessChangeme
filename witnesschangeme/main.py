@@ -38,10 +38,10 @@ def authcheck(url, templates, driver, output_folder):
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
         p = os.path.join(b, p)
-        driver.driver.save_full_page_screenshot(p)
+        driver.driver.save_full_page_screenshot(os.getcwd())
 
         for template_name, template in templates.items():
-        
+            print(f"Triyng {template["name"]}")
             try:
                 template_path = template["image_path"]
                 template_path = os.path.join(template_path, "1.png")
