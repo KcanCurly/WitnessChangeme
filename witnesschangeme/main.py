@@ -34,6 +34,7 @@ def authcheck(url, template, driver, output_folder):
         return
     
     driver.driver.get(url)
+    print(driver.driver.current_url)
     
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
@@ -46,19 +47,19 @@ def authcheck(url, template, driver, output_folder):
             
             # try:
             locate(template_path, p.__str__(), confidence=template["threshold"])
-
+            print(f"{template["name"]} matched, trying credentials")
         
             found = False
             
             for username, password in template["credentials"]:
                 if template["verify_login"](driver, username, password):
-                    print(f"Login successful: {username}", f"{output_folder}/successful_logins.txt")
+                    print(f"Login successful: {username}")
                     found = True
                     # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
                     break
             
             if not found:
-                print(f"Login failed for {url}", f"{output_folder}/failed_logins.txt")
+                print(f"Login failed")
                 return
 
         except Exception as e:
@@ -103,14 +104,14 @@ def main():
         with open(args.url, 'r') as file:
             for line in file:
                 for template_name, template in templates.items():
-                    print(f"Running template: {template_name} for {line}")
+                    print(f"Trying template: {template_name} for {line}")
                     authcheck(line, template, driver, args.output_dir)
 
                     
     # If given url is simply a website, run the templates on the website
     else:
         for template_name, template in templates.items():
-            print(f"Running template: {template_name}")
+            print(f"Trying template: {template_name}")
             authcheck(args.url, template, driver, args.output_dir)
     
     print("Quiting Selenium Driver")        
