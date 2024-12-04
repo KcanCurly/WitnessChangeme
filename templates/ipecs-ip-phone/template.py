@@ -1,7 +1,5 @@
 import os
 import importlib
-from pathlib import Path
-from selenium.webdriver.common.by import By
 
 def verify_login(driver, username, password):
     # Logic to verify login success
