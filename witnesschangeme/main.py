@@ -31,7 +31,7 @@ def authcheck(url, templates, driver, output_folder):
     
     driver.driver.get(url)
 
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver.driver, 10).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
     
