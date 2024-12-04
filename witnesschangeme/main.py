@@ -36,14 +36,15 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder):
 
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
-        WebDriverWait(driver.driver, 15).until(
+        print("IDRAC HACK activated, waiting 60 seconds")
+        WebDriverWait(driver.driver, 60).until(
             all_of(
                 EC.presence_of_element_located((By.NAME, "username")),
                 EC.presence_of_element_located((By.NAME, "password")),
                 EC.presence_of_element_located((By.XPATH, "//button[@type='submit']"))
             )
-           
         )
+        print("IDRAC HACK ended")
 
 
     
