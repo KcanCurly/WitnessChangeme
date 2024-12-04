@@ -4,18 +4,14 @@ import importlib.resources.simple
 import os
 import importlib.util
 import importlib
-import pathlib
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor   
 import requests
 from witnesschangeme.utils import append_random_characters
 from pyautogui import locate
 import pyautogui
 from witnesschangeme.selenium_driver import SeleniumDriver
-from PIL import Image
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
-import pyscreeze
+from selenium.webdriver.support.ui import WebDriverWait
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -34,6 +30,10 @@ def authcheck(url, templates, driver, output_folder):
         return
     
     driver.driver.get(url)
+
+    WebDriverWait(driver, 10).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
     
     p = append_random_characters("ss_") + ".png"
     with importlib.resources.path("temp", "") as b:
