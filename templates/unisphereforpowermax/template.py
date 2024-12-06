@@ -1,11 +1,19 @@
 import os
 import importlib
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def verify_login(driver, username, password):
     # Logic to verify login success
     try:
-
+        finalurl = driver.driver.current_url + "univmax/"
+        driver.driver.get(finalurl)
+        print("Unisphere HACK activated, waiting 60 seconds")
+        WebDriverWait(driver.driver, 60).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
+        )
+        print("Unisphere HACK ended")
         username_field = driver.driver.find_element(By.NAME, "uName")
         password_field = driver.driver.find_element(By.NAME, "passwordEye")
         login_button = driver.driver.find_element(By.XPATH, '//input[@type="submit"]')
@@ -22,7 +30,7 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code):
-    return "Unisphere for PowerMax" in source_code
+    return "Welcome to EMC Unisphere for VMAX" in source_code
 
 def get_template():
     # Load credentials and images dynamically
