@@ -115,7 +115,7 @@ def main():
     print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
     
     print("Creating Selenium Driver")
-    driver = SeleniumDriver()
+    driver = SeleniumDriver(35)
     print("Created Selenium Driver")
     
     # If given url is a file, read it line by line and run the templates on each line
