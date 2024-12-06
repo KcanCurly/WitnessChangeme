@@ -1,11 +1,15 @@
 import os
 import importlib
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def verify_login(driver, username, password):
     # Logic to verify login success
     try:
-
+        WebDriverWait(driver.driver, 60).until(
+            EC.visibility_of_element_located((By.ID, "loginButton"))
+        )
         username_field = driver.driver.find_element(By.ID, "name")
         password_field = driver.driver.find_element(By.ID, "password")
         login_button = driver.driver.find_element(By.ID, "loginButton")
