@@ -10,7 +10,7 @@ def verify_login(driver, username, password):
         WebDriverWait(driver.driver, 60).until(
             EC.visibility_of_element_located((By.ID, "loginButton"))
         )
-        username_field = driver.driver.find_element(By.ID, "name")
+        username_field = driver.driver.find_element(By.ID, "username")
         password_field = driver.driver.find_element(By.ID, "password")
         login_button = driver.driver.find_element(By.ID, "loginButton")
 
