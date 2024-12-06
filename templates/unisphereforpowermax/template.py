@@ -16,7 +16,7 @@ def verify_login(driver, username, password):
         print("Unisphere HACK ended")
         username_field = driver.driver.find_element(By.NAME, "uName")
         password_field = driver.driver.find_element(By.NAME, "passwordEye")
-        login_button = driver.driver.find_element(By.XPATH, '//input[@type="submit"]')
+        login_button = driver.driver.find_element(By.XPATH, '//button[@type="submit"]')
 
         username_field.send_keys(username)
         password_field.send_keys(password)
