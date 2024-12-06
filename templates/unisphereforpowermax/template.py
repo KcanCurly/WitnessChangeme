@@ -22,7 +22,7 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code):
-    return "zabbix-logo" in source_code
+    return "Unisphere for PowerMax" in source_code
 
 def get_template():
     # Load credentials and images dynamically

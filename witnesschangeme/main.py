@@ -33,7 +33,7 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
         return
     
     driver.driver.get(url)
-
+    print(driver.driver.current_url)
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
         print("IDRAC HACK activated, waiting 60 seconds")
