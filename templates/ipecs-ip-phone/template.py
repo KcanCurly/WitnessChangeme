@@ -19,6 +19,9 @@ def verify_login(driver, username, password):
         print(e)
         return False
 
+def check(source_code):
+    return "iPECS" in source_code and "iPKTS" in source_code
+
 def get_template():
     # Load credentials and images dynamically
     with importlib.resources.path("templates", "") as a:
@@ -34,6 +37,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
-        "threshold": 0.5
+        "threshold": 0.5,
+        "check": check
     }
     

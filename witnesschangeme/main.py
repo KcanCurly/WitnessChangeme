@@ -23,7 +23,7 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver: SeleniumDriver, output_folder):
+def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -41,45 +41,59 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder):
             EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
         )
         print("IDRAC HACK ended")
-
-
     
-    p = append_random_characters("ss_") + ".png"
-    with importlib.resources.path("temp", "") as b:
-        p = os.path.join(os.getcwd(), p)
-        driver.driver.save_full_page_screenshot(p)
+    # Unisphere HACK
+    if "univmax" in driver.driver.current_url:
+        print("Unisphere HACK activated, waiting 60 seconds")
+        WebDriverWait(driver.driver, 60).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
+        )
+        print("Unisphere HACK ended")
 
-        for template_name, template in templates.items():
-            print(f"Triyng {template["name"]}")
-            try:
-                template_path = template["image_path"]
-                template_path = os.path.join(template_path, "1.png")
-                
-                # try:
-                locate(template_path, p.__str__(), confidence=template["threshold"])
-                print(f"{template["name"]} matched, trying credentials")
+    if pyautogui:
+         p = append_random_characters("ss_") + ".png"
+         p = os.path.join(os.getcwd(), p)
+         driver.driver.save_full_page_screenshot(p)
+
+    for template_name, template in templates.items():
+        print(f"Triyng {template["name"]}")
+        try:
+            template_path = template["image_path"]
+            template_path = os.path.join(template_path, "1.png")
             
-                found = False
-                
-                for username, password in template["credentials"]:
-                    if template["verify_login"](driver, username, password):
-                        print(f"Login successful: {username}")
-                        found = True
-                        # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                        break
-                
-                if not found:
-                    print(f"Login failed")
-                    return
+            if pyautogui:
+                locate(template_path, p.__str__(), confidence=template["threshold"])
+            else:
+                if not template["check"](response.text):
+                    continue
 
-            except Exception as e:
-                print(e)
+            
+            print(f"{template["name"]} matched, trying credentials")
+        
+            found = False
+            
+            for username, password in template["credentials"]:
+                if template["verify_login"](driver, username, password):
+                    print(f"Login successful: {username}")
+                    found = True
+                    # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
+                    break
+            
+            if not found:
+                print(f"Login failed")
+                return
 
-        # os.remove(p)
+        except Exception as e:
+            print(e)
+    
+    if pyautogui:
+        os.remove(p)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
-    parser.add_argument("--url", required=True, help="Target URL to test.")
+    parser.add_argument("-t", required=True, help="Target URL to test.")
+    parser.add_argument("--pyautogui", default=False, help="Use pyautogui to compare template")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     args = parser.parse_args()
     pyautogui.useImageNotFoundException(True)
@@ -109,16 +123,16 @@ def main():
     print("Created Selenium Driver")
     
     # If given url is a file, read it line by line and run the templates on each line
-    if os.path.isfile(args.url):
-        with open(args.url, 'r') as file:
+    if os.path.isfile(args.t):
+        with open(args.t, 'r') as file:
             for line in file:
-                authcheck(line, templates, driver, args.output_dir)
+                authcheck(line, templates, driver, args.output_dir, args.pyautogui)
                     
 
                     
     # If given url is simply a website, run the templates on the website
     else:
-        authcheck(args.url, templates, driver, args.output_dir)
+        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui)
     
     print("Quiting Selenium Driver")        
     driver.quit()
