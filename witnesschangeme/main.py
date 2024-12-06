@@ -65,12 +65,17 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
             
             for username, password in template["credentials"]:
                 if template["verify_login"](driver, username, password):
-                    print(f"Login successful: {username}")
+                    print(f"Login successful: {username}:{password}")
                     found = True
+                    if pyautogui:
+                        os.remove(p)
                     # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                    break
+                    return
             
+
             if not found:
+                if pyautogui:
+                    os.remove(p)
                 print(f"Login failed")
                 return
 
