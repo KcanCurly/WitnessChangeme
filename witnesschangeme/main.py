@@ -28,12 +28,13 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
+    print(f"Request got {response.url}")
     if response.status_code >= 400:
-        print(f"{url} returned {response.status_code}")
+        print(f"{url} => {response.status_code}")
         return
     
     driver.driver.get(url)
-    print(driver.driver.current_url)
+    print(f"Selenium got {driver.driver.current_url}")
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
         print("IDRAC HACK activated, waiting 60 seconds")
