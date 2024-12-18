@@ -4,7 +4,7 @@ import requests
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import re
-from urllib.parse import urlencode
+from urllib.parse import quote
 
 def verify_login2(url):
     with importlib.resources.path("templates", "") as a:
@@ -33,7 +33,7 @@ def verify_login2(url):
         C7="tr"
         pwd=password
 
-        res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : urlencode(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+        res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : quote(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
         for cookie in res.cookies:
             if "PHP" in cookie.name:
                 with open("witnesschangeme-valid.txt", "a") as file:
