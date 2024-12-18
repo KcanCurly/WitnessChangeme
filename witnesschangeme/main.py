@@ -48,73 +48,75 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         print(f"{url} => {response.status_code}, proceeding with selenium")
     try:
         driver.driver.get(url)
+   
+        # IDRAC HACK
+        if driver.driver.current_url.endswith("/restgui/start.html"):
+            if verbose:
+                print("IDRAC HACK activated, waiting 60 seconds")
+            WebDriverWait(driver.driver, 60).until(
+                EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
+            )
+            if verbose:
+                print("IDRAC HACK ended")
+
+        if pyautogui:
+            p = append_random_characters("ss_") + ".png"
+            p = os.path.join(os.getcwd(), p)
+            driver.driver.save_full_page_screenshot(p)
+
+        for _, template in templates.items():
+            if verbose:
+                print(f"Trying {template["name"]}")
+            try:
+                template_path = template["image_path"]
+                template_path = os.path.join(template_path, "1.png")
+                
+                if pyautogui:
+                    locate(template_path, p.__str__(), confidence=template["threshold"])
+                else:
+                    if not template["check"](response.text):
+                        continue
+
+                if verbose:
+                    print(f"{template["name"]} matched, trying credentials")
+            
+                found = False
+                
+                for username, password in template["credentials"]:
+                    if template["verify_login"](driver, username, password):
+                        with open("witnesschangeme-valid.txt", "a") as file:
+                            file.write(f"{url} => {template["name"]} => {username}:{password}\n")
+                        print(f"{url} => {template["name"]} => {username}:{password}\n")
+
+                        found = True
+                        if pyautogui:
+                            os.remove(p)
+                        # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
+                        return
+                
+
+                if not found:
+                    if pyautogui:
+                        os.remove(p)
+                    if verbose:
+                        print(f"Login failed")
+                    with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                        file.write(f"{url} => {template["name"]}\n")
+                    return
+
+            except Exception as e:
+                print(e)
+        
+        if pyautogui:
+            os.remove(p)
+
+        with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
+            file.write(f"{url}\n")
+
     except Exception as e:
         with open("witnesschangeme-error.txt", "a") as file:
             file.write(f"{url} => {e.__class__.__name__}\n")
-        return        
-    # IDRAC HACK
-    if driver.driver.current_url.endswith("/restgui/start.html"):
-        if verbose:
-            print("IDRAC HACK activated, waiting 60 seconds")
-        WebDriverWait(driver.driver, 60).until(
-            EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
-        )
-        if verbose:
-            print("IDRAC HACK ended")
-
-    if pyautogui:
-         p = append_random_characters("ss_") + ".png"
-         p = os.path.join(os.getcwd(), p)
-         driver.driver.save_full_page_screenshot(p)
-
-    for _, template in templates.items():
-        if verbose:
-            print(f"Trying {template["name"]}")
-        try:
-            template_path = template["image_path"]
-            template_path = os.path.join(template_path, "1.png")
-            
-            if pyautogui:
-                locate(template_path, p.__str__(), confidence=template["threshold"])
-            else:
-                if not template["check"](response.text):
-                    continue
-
-            if verbose:
-                print(f"{template["name"]} matched, trying credentials")
-        
-            found = False
-            
-            for username, password in template["credentials"]:
-                if template["verify_login"](driver, username, password):
-                    with open("witnesschangeme-valid.txt", "a") as file:
-                        file.write(f"{url} => {username}:{password}\n")
-                    print(f"Login successful: {username}:{password}")
-
-                    found = True
-                    if pyautogui:
-                        os.remove(p)
-                    # save_screenshot(self.driver, f"{self.output_dir}/successful_logins/{username}.png")
-                    return
-            
-
-            if not found:
-                if pyautogui:
-                    os.remove(p)
-                if verbose:
-                    print(f"Login failed")
-                with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-                    file.write(f"{url} => {template["name"]}\n")
-                return
-
-        except Exception as e:
-            print(e)
-    
-    if pyautogui:
-        os.remove(p)
-
-    with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-        file.write(f"{url}\n")
+        return     
 
 
 def main():
