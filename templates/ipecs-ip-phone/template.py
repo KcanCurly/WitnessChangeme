@@ -14,7 +14,7 @@ def verify_login2(url, verbose = False):
         password = cred[1]
 
         res = requests.get(url + "/web/home.asp", verify=False, auth=(username, password))
-
+        print(res.text)
         if not "Unauthorized" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => IPECS IP PHONE => {username}:{password}\n")
@@ -44,7 +44,6 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code):
-    print(source_code)
     return 'index.asp' in source_code and 'lip-mainframe' in source_code
 
 def get_template():
