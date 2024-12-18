@@ -13,7 +13,7 @@ def verify_login2(url, verbose = False):
         username = cred[0]
         password = cred[1]
 
-        res = requests.get(url, verify=False, auth=(username, password))
+        res = requests.get(url + "/web/home.asp", verify=False, auth=(username, password))
 
         if not "Unauthorized" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
@@ -44,7 +44,7 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code):
-    return "iPECS" in source_code and "iPKTS" in source_code
+    return 'src="index.asp"' in source_code and 'name="lip-mainframe"' in source_code
 
 def get_template():
     # Load credentials and images dynamically
