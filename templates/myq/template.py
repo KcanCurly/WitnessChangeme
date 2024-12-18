@@ -22,19 +22,29 @@ def verify_login2(url):
 
         script_content = soup.findAll('script', type="text/javascript")
         script_content = script_content[-1].string
-        print(script_content)
+
         match = re.search(r'"instanceID":"(.*?)"', script_content)
         if match:
             instance_id = match.group(1)
-            print("Extracted Instance ID:", instance_id)
+
 
         wsfState='{"async":true,"hash":{},"object":"C4","method":"onLogin","params":[],"ctrlsState":{"C1":{"focusedCtrl":"C10"},"C9":{"modified":true,"value":"*' + username +'"},"C10":{"modified":true,"value":"*' + password + '"}},"deletedServerCtrls":[],"requestID":0,"instanceID":"' + instance_id + "}"
         wsfRequestId = wsf_request_id
         C7="tr"
         pwd=password
 
+        req = requests.Request("POST", url, data={"wsfState" : quote(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+        prepared = req.prepare()
+        print(f"{prepared.method} {prepared.url} HTTP/1.1")
+        for k, v in prepared.headers.items():
+            print(f"{k}: {v}")
+        if prepared.body:
+            print("\n", prepared.body.decode() if isinstance(prepared.body, bytes) else prepared.body)
         res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : quote(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+        print(res.headers)
+        print(res.text)
         for cookie in res.cookies:
+            print(cookie.name)
             if "PHP" in cookie.name:
                 with open("witnesschangeme-valid.txt", "a") as file:
                     file.write(f"{url} => MYQ => {username}:{password}\n")
