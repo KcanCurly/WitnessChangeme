@@ -23,7 +23,7 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, verbose):
+def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, selenium, verbose):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -39,6 +39,15 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         with open("witnesschangeme-error.txt", "a") as file:
             file.write(f"{url} => {e.__class__.__name__}\n")
         return
+    
+    if not selenium:
+        for _, template in templates.items():
+            if verbose:
+                print(f"Trying {template["name"]}")
+            if template["check"](response.text):
+                template["verify_login2"](url)
+        return
+
     if "/app/home" in response.url and "Observability" in response.text:
         print(f"{url} => Unauthenticated ELASTIC")
         with open("witnesschangeme-valid.txt", "a") as file:
@@ -124,6 +133,7 @@ def main():
     parser.add_argument("-t", required=True, help="Target URL to test.")
     parser.add_argument("--pyautogui", default=False, help="Use pyautogui to compare template")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
+    parser.add_argument("--use-selenium", default=False, help="Use selenium for authentication checks.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     args = parser.parse_args()
     pyautogui.useImageNotFoundException(True)
@@ -144,33 +154,35 @@ def main():
                 spec.loader.exec_module(module)
                 t = module.get_template()
                 templates[item.name] = t
-                
-    if(args.verbose):
+
+    if args.verbose:
         print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
-    
-    if(args.verbose):
-        print("Creating Selenium Driver")
-    driver = SeleniumDriver(15)
-    if(args.verbose):
-        print("Created Selenium Driver")
+
+    if args.use_selenium:
+        if args.verbose:
+            print("Creating Selenium Driver")
+        driver = SeleniumDriver(15)
+        if args.verbose:
+            print("Created Selenium Driver")
     
     # If given url is a file, read it line by line and run the templates on each line
     if os.path.isfile(args.t):
         with open(args.t, 'r') as file:
             for line in file:
-                authcheck(line.strip(), templates, driver, args.output_dir, args.pyautogui, args.verbose)
+                authcheck(line.strip(), templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose)
                     
 
                     
     # If given url is simply a website, run the templates on the website
     else:
-        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui, args.verbose)
+        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose)
     
-    if(args.verbose):
-        print("Quiting Selenium Driver")        
-    driver.quit()
-    if(args.verbose):
-        print("Quitted Selenium Driver")
+    if args.use_selenium:
+        if args.verbose:
+            print("Quiting Selenium Driver")        
+        driver.quit()
+        if args.verbose:
+            print("Quitted Selenium Driver")
     
 
 if __name__ == "__main__":

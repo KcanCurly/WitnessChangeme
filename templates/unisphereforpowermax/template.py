@@ -3,6 +3,24 @@ import importlib
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
+
+def verify_login2(url):
+    with importlib.resources.path("templates", "") as a:
+        b = os.path.join(a, "unisphereforpowermax", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+
+    for cred in credentials:
+        username = cred[0]
+        password = cred[1]
+        res = requests.post(url + "/restapi/common/login", auth=(username, password), timeout= 15)
+        if not "Unauthorized" in res.text:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
+
+    with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+        file.write(f"{url} => UNISPHERE FOR POWERMAX\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success
@@ -47,6 +65,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
+        "verify_login2": verify_login2,
         "threshold": 0.5,
         "check":check
     }

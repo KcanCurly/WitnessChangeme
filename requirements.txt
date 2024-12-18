@@ -8,3 +8,4 @@ pillow
 pyvirtualdisplay
 xlib
 python-xlib
+bs4

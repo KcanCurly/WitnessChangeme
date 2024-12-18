@@ -1,6 +1,44 @@
 import os
 import importlib
+import requests
 from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+import re
+from urllib.parse import urlencode
+
+def verify_login2(url):
+    with importlib.resources.path("templates", "") as a:
+        b = os.path.join(a, "myq", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+
+    for cred in credentials:
+        username = cred[0]
+        password = cred[1]
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, "html.parser")
+
+        wsf_request_id = soup.find("input", {"id": "wsfHashId"})["value"]
+        script_content = soup.find('script', type="text/javascript").string
+        match = re.search(r'"instanceID":"(.*?)"', script_content)
+        if match:
+            instance_id = match.group(1)
+            print("Extracted Instance ID:", instance_id)
+
+        wsfState='{"async":true,"hash":{},"object":"C4","method":"onLogin","params":[],"ctrlsState":{"C1":{"focusedCtrl":"C10"},"C9":{"modified":true,"value":"*' + username +'"},"C10":{"modified":true,"value":"*' + password + '"}},"deletedServerCtrls":[],"requestID":0,"instanceID":"' + instance_id + "}"
+        wsfRequestId = wsf_request_id
+        C7="tr"
+        pwd=password
+
+        res = requests.post(url, data={"wsfState" : urlencode(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+        for cookie in res.cookies:
+            if "PHP" in cookie.name:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => MYQ => {username}:{password}\n")
+
+    with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+        file.write(f"{url} => MYQ\n")
+
 
 def verify_login(driver, username, password):
     # Logic to verify login success
@@ -39,6 +77,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
+        "verify_login2": verify_login2,
         "threshold": 0.5,
         "check":check
     }
