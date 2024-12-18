@@ -44,7 +44,8 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code):
-    return 'src="index.asp"' in source_code and 'name="lip-mainframe"' in source_code
+    print(source_code)
+    return 'index.asp' in source_code and 'lip-mainframe' in source_code
 
 def get_template():
     # Load credentials and images dynamically
