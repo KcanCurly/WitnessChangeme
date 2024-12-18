@@ -20,8 +20,8 @@ def verify_login2(url, verbose = False):
         base_url = match.group(1)
 
         res = requests.post(base_url + extra, verify=False, headers={"user":username, "password": password})
-        print(res.text)
-        if '"authResult": 7' in res.text:
+
+        if '"authResult" : 7' in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => IDRAC => {username}:{password}\n")
             print(f"{url} => IDRAC => {username}:{password}")
