@@ -1,6 +1,35 @@
 import os
 import importlib
 from selenium.webdriver.common.by import By
+import requests
+import re
+
+def verify_login2(url, verbose = False):
+    found = False
+    with importlib.resources.path("templates", "") as a:
+        b = os.path.join(a, "idrac", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+
+    for cred in credentials:
+        username = cred[0]
+        password = cred[1]
+        extra= '/sysmgmt/2015/bmc/session'
+        pattern = r'^(https?://[^/]+)'
+        match = re.match(pattern, url)
+        base_url = match.group(1)
+
+        res = requests.post(base_url + extra, verify=False, headers={"user":username, "password": password})
+
+        if '"authResult": 7' in res.text:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => IDRAC => {username}:{password}\n")
+            print(f"{url} => IDRAC => {username}:{password}")
+            found = True
+
+    if not found:
+        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+            file.write(f"{url} => IDRAC\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success
@@ -38,6 +67,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
+        "verify_login2": verify_login2,
         "threshold": 0.5,
         "check": check
     }
