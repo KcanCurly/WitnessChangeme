@@ -23,7 +23,7 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, selenium, verbose):
+def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, verbose):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
