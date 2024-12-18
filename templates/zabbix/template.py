@@ -1,6 +1,31 @@
 import os
 import importlib
 from selenium.webdriver.common.by import By
+import requests
+
+def verify_login2(url, verbose = False):
+    found = False
+    with importlib.resources.path("templates", "") as a:
+        b = os.path.join(a, "zabbix", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+
+    for cred in credentials:
+        username = cred[0]
+        password = cred[1]
+
+        res = requests.post(url + "/index.php", verify=False, data={"name":username, "password": password, "enter": "Sign+in"})
+
+        if not "Incorrect user name or password or account is temporarily blocked" in res.text:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => ZABBIX => {username}:{password}\n")
+            print(f"{url} => ZABBIX => {username}:{password}")
+            found = True
+
+    if not found:
+        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+            file.write(f"{url} => ZABBIX\n")
+
 
 def verify_login(driver, username, password):
     # Logic to verify login success
@@ -39,6 +64,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
+        "verify_login2": verify_login2,
         "threshold": 0.5,
         "check":check
     }

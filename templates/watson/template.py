@@ -3,6 +3,30 @@ import importlib
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
+
+def verify_login2(url, verbose = False):
+    found = False
+    with importlib.resources.path("templates", "") as a:
+        b = os.path.join(a, "watson", "creds.txt")
+        with open(b, "r") as f:
+            credentials = [tuple(line.strip().split(":")) for line in f if ":" in line]
+
+    for cred in credentials:
+        username = cred[0]
+        password = cred[1]
+
+        res = requests.post(url, verify=False, data={"username":username, "password": password})
+
+        if not "Authentication failed" in res.text:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => WATSON => {username}:{password}\n")
+            print(f"{url} => WATSON => {username}:{password}")
+            found = True
+
+    if not found:
+        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+            file.write(f"{url} => WATSON\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success
@@ -44,6 +68,7 @@ def get_template():
         "image_path": i,
         "credentials": credentials,
         "verify_login": verify_login,
+        "verify_login2": verify_login2,
         "threshold": 0.5,
         "check":check
     }
