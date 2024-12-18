@@ -36,7 +36,6 @@ def verify_login2(url):
         res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : quote(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
 
         for cookie in res.cookies:
-            print(cookie.name)
             if "PHP" in cookie.name:
                 with open("witnesschangeme-valid.txt", "a") as file:
                     file.write(f"{url} => MYQ => {username}:{password}\n")

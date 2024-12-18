@@ -14,7 +14,7 @@ def verify_login2(url):
     for cred in credentials:
         username = cred[0]
         password = cred[1]
-        res = requests.post(url + "/restapi/common/login", auth=(username, password), timeout= 15)
+        res = requests.post(url + "/restapi/common/login", auth=(username, password), timeout= 15, verify=False)
         if not "Unauthorized" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
