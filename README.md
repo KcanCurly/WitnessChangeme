@@ -27,7 +27,7 @@ xvfb-run witnesschangeme -t file.txt
 If you run with xvfb-run, don't forget to kill the xvfb-run process later on
 
 There will be 4 files where you run the command
-witnesschangeme-error.txt -> Urls that gave error such as 4xx,5xx
-witnesschangeme-valid.txt -> Urls that had valid default credentials
-witnesschangeme-valid-template-no-credential.txt -> Urls that had a template but didn't have default credentials
-witnesschangeme-valid-url-no-template.txt -> Urls that was valid but had no template
+ - witnesschangeme-error.txt -> Urls that gave error such as 4xx,5xx
+ - witnesschangeme-valid.txt -> Urls that had valid default credentials
+ - witnesschangeme-valid-template-no-credential.txt -> Urls that had a template but didn't have default credentials
+ - witnesschangeme-valid-url-no-template.txt -> Urls that was valid but had no template

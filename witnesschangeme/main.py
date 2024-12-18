@@ -36,7 +36,7 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         return
     if "/app/home" in response.url and "Observability" in response.text:
         print(f"{url} => Unauthenticated ELASTIC")
-        with open("witnesschangeme-matched-credential.txt", "a") as file:
+        with open("witnesschangeme-valid.txt", "a") as file:
             file.write(f"{url} => Unauthenticated ELASTIC")
         return
     driver.driver.get(url)
@@ -55,9 +55,9 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
          p = os.path.join(os.getcwd(), p)
          driver.driver.save_full_page_screenshot(p)
 
-    for template in templates.items():
+    for _, template in templates.items():
         if verbose:
-            print(f"Triyng {template["name"]}")
+            print(f"Trying {template["name"]}")
         try:
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
@@ -110,7 +110,7 @@ def main():
     parser.add_argument("-t", required=True, help="Target URL to test.")
     parser.add_argument("--pyautogui", default=False, help="Use pyautogui to compare template")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
-    parser.add_argument("--verbose", default=False, help="Verbose output.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     args = parser.parse_args()
     pyautogui.useImageNotFoundException(True)
     if os.name == "posix":
