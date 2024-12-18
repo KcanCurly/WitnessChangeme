@@ -9,7 +9,7 @@ def parse_requirements(filename):
 setup(
     name="witnesschangeme",
     version="0.0.1",
-    description="Witnesschangeme - A tool to test website logins using Selenium and pyautogui.",
+    description="Witnesschangeme - A tool to test website logins using Selenium and optionally pyautogui.",
     author="KcanCurly",
     packages=find_packages(),
     install_requires=parse_requirements("requirements.txt"),

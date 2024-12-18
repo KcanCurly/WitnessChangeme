@@ -23,31 +23,41 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
+def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, verbose):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
     if response.status_code >= 400:
-        print(f"{url} => {response.status_code}")
+        if verbose:
+            print(f"{url} => {response.status_code}")
+        with open("witnesschangeme-error.txt", "a") as file:
+            file.write(f"{url} => {response.status_code}")
         return
-    
+    if "/app/home" in response.url and "Observability" in response.text:
+        print(f"{url} => Unauthenticated ELASTIC")
+        with open("witnesschangeme-matched-credential.txt", "a") as file:
+            file.write(f"{url} => Unauthenticated ELASTIC")
+        return
     driver.driver.get(url)
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
-        print("IDRAC HACK activated, waiting 60 seconds")
+        if verbose:
+            print("IDRAC HACK activated, waiting 60 seconds")
         WebDriverWait(driver.driver, 60).until(
             EC.visibility_of_element_located((By.XPATH, "//button[@type='submit']"))
         )
-        print("IDRAC HACK ended")
+        if verbose:
+            print("IDRAC HACK ended")
 
     if pyautogui:
          p = append_random_characters("ss_") + ".png"
          p = os.path.join(os.getcwd(), p)
          driver.driver.save_full_page_screenshot(p)
 
-    for template_name, template in templates.items():
-        print(f"Triyng {template["name"]}")
+    for template in templates.items():
+        if verbose:
+            print(f"Triyng {template["name"]}")
         try:
             template_path = template["image_path"]
             template_path = os.path.join(template_path, "1.png")
@@ -58,14 +68,17 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
                 if not template["check"](response.text):
                     continue
 
-            
-            print(f"{template["name"]} matched, trying credentials")
+            if verbose:
+                print(f"{template["name"]} matched, trying credentials")
         
             found = False
             
             for username, password in template["credentials"]:
                 if template["verify_login"](driver, username, password):
+                    with open("witnesschangeme-valid.txt", "a") as file:
+                        file.write(f"{url} => {username}:{password}")
                     print(f"Login successful: {username}:{password}")
+
                     found = True
                     if pyautogui:
                         os.remove(p)
@@ -76,7 +89,10 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
             if not found:
                 if pyautogui:
                     os.remove(p)
-                print(f"Login failed")
+                if verbose:
+                    print(f"Login failed")
+                with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                    file.write(f"{url} => {template["name"]}")
                 return
 
         except Exception as e:
@@ -85,12 +101,16 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui):
     if pyautogui:
         os.remove(p)
 
+    with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
+        file.write(f"{url}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
     parser.add_argument("-t", required=True, help="Target URL to test.")
     parser.add_argument("--pyautogui", default=False, help="Use pyautogui to compare template")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
+    parser.add_argument("--verbose", default=False, help="Verbose output.")
     args = parser.parse_args()
     pyautogui.useImageNotFoundException(True)
     if os.name == "posix":
@@ -111,28 +131,32 @@ def main():
                 t = module.get_template()
                 templates[item.name] = t
                 
-
-    print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
+    if(args.verbose):
+        print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
     
-    print("Creating Selenium Driver")
-    driver = SeleniumDriver(35)
-    print("Created Selenium Driver")
+    if(args.verbose):
+        print("Creating Selenium Driver")
+    driver = SeleniumDriver(15)
+    if(args.verbose):
+        print("Created Selenium Driver")
     
     # If given url is a file, read it line by line and run the templates on each line
     if os.path.isfile(args.t):
         with open(args.t, 'r') as file:
             for line in file:
-                authcheck(line, templates, driver, args.output_dir, args.pyautogui)
+                authcheck(line, templates, driver, args.output_dir, args.pyautogui, args.verbose)
                     
 
                     
     # If given url is simply a website, run the templates on the website
     else:
-        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui)
+        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui, args.verbose)
     
-    print("Quiting Selenium Driver")        
+    if(args.verbose):
+        print("Quiting Selenium Driver")        
     driver.quit()
-    print("Quitted Selenium Driver")
+    if(args.verbose):
+        print("Quitted Selenium Driver")
     
 
 if __name__ == "__main__":
