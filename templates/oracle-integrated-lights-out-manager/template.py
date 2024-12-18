@@ -25,19 +25,22 @@ def verify_login2(url, verbose = False):
         res = requests.get(url, verify=False)
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        script = soup.findAll('script')
-        script = script[-1]
-        print(script.string)
-        match = re.search(r'"loginToken", "(.*?)"\);', script.string)
-        login_token = match.group(1)
+        scripts = soup.findAll('script')
+        for script in scripts:
+            if "loginToken" in script:
+                print(script.string)
+                match = re.search(r'"loginToken", "(.*?)"\);', script.string)
+                login_token = match.group(1)
 
-        res = requests.post(base_url + extra, data={"username" : username, "password": password, "loginToken": login_token}, verify=False)
+                res = requests.post(base_url + extra, data={"username" : username, "password": password, "loginToken": login_token}, verify=False)
 
 
-        if not "/iPages/i_login.asp?msg=2":
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
-                print(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
+                if not "/iPages/i_login.asp?msg=2":
+                    with open("witnesschangeme-valid.txt", "a") as file:
+                        file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
+                        print(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
+
+                break
 
     if not found:
         with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
