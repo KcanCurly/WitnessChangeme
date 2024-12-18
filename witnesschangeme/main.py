@@ -28,22 +28,24 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     try:
-        response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
+        response = requests.get(url, allow_redirects=True, headers=headers, verify=False, timeout=15)
         if response.status_code >= 400:
             if verbose:
                 print(f"{url} => {response.status_code}")
             with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {response.status_code}")
+                file.write(f"{url} => {response.status_code}\n")
             return
     except Exception as e:
         with open("witnesschangeme-error.txt", "a") as file:
-            file.write(f"{url} => {e.__class__.__name__}")
+            file.write(f"{url} => {e.__class__.__name__}\n")
         return
     if "/app/home" in response.url and "Observability" in response.text:
         print(f"{url} => Unauthenticated ELASTIC")
         with open("witnesschangeme-valid.txt", "a") as file:
-            file.write(f"{url} => Unauthenticated ELASTIC")
+            file.write(f"{url} => Unauthenticated ELASTIC\n")
         return
+    if verbose:
+        print(f"{url} => {response.status_code}, proceeding with selenium")
     driver.driver.get(url)
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
@@ -81,7 +83,7 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
             for username, password in template["credentials"]:
                 if template["verify_login"](driver, username, password):
                     with open("witnesschangeme-valid.txt", "a") as file:
-                        file.write(f"{url} => {username}:{password}")
+                        file.write(f"{url} => {username}:{password}\n")
                     print(f"Login successful: {username}:{password}")
 
                     found = True
@@ -97,7 +99,7 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
                 if verbose:
                     print(f"Login failed")
                 with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-                    file.write(f"{url} => {template["name"]}")
+                    file.write(f"{url} => {template["name"]}\n")
                 return
 
         except Exception as e:
@@ -107,7 +109,7 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         os.remove(p)
 
     with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-        file.write(f"{url}")
+        file.write(f"{url}\n")
 
 
 def main():
