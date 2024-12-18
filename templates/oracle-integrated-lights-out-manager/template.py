@@ -27,7 +27,8 @@ def verify_login2(url, verbose = False):
 
         script = soup.findAll('script')
         script = script[-1]
-        match = re.search(r'setElementValue\("loginToken", "(.*?)"\);', script.string)
+        print(script.string)
+        match = re.search(r'"loginToken", "(.*?)"\);', script.string)
         login_token = match.group(1)
 
         res = requests.post(base_url + extra, data={"username" : username, "password": password, "loginToken": login_token}, verify=False)
