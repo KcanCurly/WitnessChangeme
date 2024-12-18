@@ -15,7 +15,7 @@ def verify_login2(url):
     for cred in credentials:
         username = cred[0]
         password = cred[1]
-        res = requests.get(url)
+        res = requests.get(url, verify=False, timeout= 15)
         soup = BeautifulSoup(res.text, "html.parser")
 
         wsf_request_id = soup.find("input", {"id": "wsfHashId"})["value"]
@@ -30,7 +30,7 @@ def verify_login2(url):
         C7="tr"
         pwd=password
 
-        res = requests.post(url, data={"wsfState" : urlencode(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+        res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : urlencode(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
         for cookie in res.cookies:
             if "PHP" in cookie.name:
                 with open("witnesschangeme-valid.txt", "a") as file:
