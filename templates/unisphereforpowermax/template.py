@@ -18,6 +18,7 @@ def verify_login2(url):
         if not "Unauthorized" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
+                print(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
 
     with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
         file.write(f"{url} => UNISPHERE FOR POWERMAX\n")

@@ -16,6 +16,7 @@ def verify_login2(url):
         if not "Authentication failure" in res.text and not "Unable to contact server" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => FORTIGATE => {username}:{password}\n")
+                print(f"{url} => FORTIGATE => {username}:{password}\n")
 
     with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
         file.write(f"{url} => FORTIGATE\n")
