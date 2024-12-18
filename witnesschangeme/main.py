@@ -157,7 +157,7 @@ def main():
 
     if args.verbose:
         print(f"Loaded {len(templates)} templates: {', '.join(templates.keys())}")
-
+    driver = None
     if args.use_selenium:
         if args.verbose:
             print("Creating Selenium Driver")
