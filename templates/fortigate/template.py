@@ -3,7 +3,8 @@ import importlib
 import requests
 from selenium.webdriver.common.by import By
 
-def verify_login2(url):
+def verify_login2(url, verbose = False):
+    found = False
     with importlib.resources.path("templates", "") as a:
         b = os.path.join(a, "fortigate", "creds.txt")
         with open(b, "r") as f:
@@ -16,10 +17,12 @@ def verify_login2(url):
         if not "Authentication failure" in res.text and not "Unable to contact server" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => FORTIGATE => {username}:{password}\n")
-                print(f"{url} => FORTIGATE => {username}:{password}\n")
-
-    with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-        file.write(f"{url} => FORTIGATE\n")
+            print(f"{url} => FORTIGATE => {username}:{password}")
+            found = True
+                
+    if not found:
+        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+            file.write(f"{url} => FORTIGATE\n")
 
 
 def verify_login(driver, username, password):
