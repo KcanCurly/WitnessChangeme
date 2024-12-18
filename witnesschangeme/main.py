@@ -48,9 +48,13 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
                 if template["check"](response.text):
                     template["verify_login2"](url, verbose)
 
+        except TimeoutError as timeout:
+            with open("witnesschangeme-error.txt", "a") as file:
+                file.write(f"{url} => Timeout\n")
         except Exception as e:
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url} => {e.__class__.__name__}\n")
+                file.write(e)
 
         return
 
