@@ -1,6 +1,7 @@
 import os
 import importlib
 import requests
+from requests.auth import HTTPDigestAuth
 
 def verify_login2(url, verbose = False):
     found = False
@@ -13,8 +14,8 @@ def verify_login2(url, verbose = False):
         username = cred[0]
         password = cred[1]
 
-        res = requests.get(url + "/web/home.asp", verify=False, auth=(username, password))
-        print(res.text)
+        res = requests.get(url + "/web/home.asp", verify=False, auth=HTTPDigestAuth(username, password))
+
         if not "Unauthorized" in res.text:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => IPECS IP PHONE => {username}:{password}\n")
