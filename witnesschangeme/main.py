@@ -27,12 +27,17 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
-    response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
-    if response.status_code >= 400:
-        if verbose:
-            print(f"{url} => {response.status_code}")
+    try:
+        response = requests.get(url, allow_redirects=True, headers=headers, verify=False)
+        if response.status_code >= 400:
+            if verbose:
+                print(f"{url} => {response.status_code}")
+            with open("witnesschangeme-error.txt", "a") as file:
+                file.write(f"{url} => {response.status_code}")
+            return
+    except Exception as e:
         with open("witnesschangeme-error.txt", "a") as file:
-            file.write(f"{url} => {response.status_code}")
+            file.write(f"{url} => {e.__class__.__name__}")
         return
     if "/app/home" in response.url and "Observability" in response.text:
         print(f"{url} => Unauthenticated ELASTIC")
@@ -144,7 +149,7 @@ def main():
     if os.path.isfile(args.t):
         with open(args.t, 'r') as file:
             for line in file:
-                authcheck(line, templates, driver, args.output_dir, args.pyautogui, args.verbose)
+                authcheck(line.strip(), templates, driver, args.output_dir, args.pyautogui, args.verbose)
                     
 
                     
