@@ -19,9 +19,9 @@ def verify_login2(url):
         soup = BeautifulSoup(res.text, "html.parser")
 
         wsf_request_id = soup.find("input", {"id": "wsfHashId"})["value"]
-        print(wsf_request_id)
+
         script_content = soup.findAll('script', type="text/javascript")
-        script_content = script_content[-1]
+        script_content = script_content[-1].string
         print(script_content)
         match = re.search(r'"instanceID":"(.*?)"', script_content)
         if match:
