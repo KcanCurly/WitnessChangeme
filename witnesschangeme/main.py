@@ -41,11 +41,17 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
         return
     
     if not selenium:
-        for _, template in templates.items():
-            if verbose:
-                print(f"Trying {template["name"]}")
-            if template["check"](response.text):
-                template["verify_login2"](url)
+        try:
+            for _, template in templates.items():
+                if verbose:
+                    print(f"Trying {template["name"]}")
+                if template["check"](response.text):
+                    template["verify_login2"](url)
+
+        except Exception as e:
+            with open("witnesschangeme-error.txt", "a") as file:
+                file.write(f"{url} => {e.__class__.__name__}\n")
+
         return
 
     if "/app/home" in response.url and "Observability" in response.text:
