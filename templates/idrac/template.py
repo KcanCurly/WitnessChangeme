@@ -50,7 +50,7 @@ def verify_login(driver, username, password):
         return False
 
 def check(source_code : str) -> bool:
-    return "Integrated Remote Access Controller" in source_code
+    return "idrac-start-screen" in source_code
 
 def get_template():
     # Load credentials and images dynamically
