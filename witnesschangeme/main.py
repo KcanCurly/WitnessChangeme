@@ -54,7 +54,7 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
         except Exception as e:
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url} => {e.__class__.__name__}\n")
-                file.write(e)
+                file.write(str(e))
 
         return
 
