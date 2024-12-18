@@ -46,7 +46,12 @@ def authcheck(url, templates, driver: SeleniumDriver, output_folder, pyautogui, 
         return
     if verbose:
         print(f"{url} => {response.status_code}, proceeding with selenium")
-    driver.driver.get(url)
+    try:
+        driver.driver.get(url)
+    except Exception as e:
+        with open("witnesschangeme-error.txt", "a") as file:
+            file.write(f"{url} => {e.__class__.__name__}\n")
+        return        
     # IDRAC HACK
     if driver.driver.current_url.endswith("/restgui/start.html"):
         if verbose:
