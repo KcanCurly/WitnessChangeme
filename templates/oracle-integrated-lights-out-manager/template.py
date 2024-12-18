@@ -25,7 +25,7 @@ def verify_login2(url, verbose = False):
         res = requests.get(url, verify=False)
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        script = soup.findAll('script', text=re.compile('setElementValue.*loginToken.*'))
+        script = soup.findAll('script')
         script = script[-1]
         match = re.search(r'setElementValue\("loginToken", "(.*?)"\);', script.string)
         login_token = match.group(1)
