@@ -159,6 +159,7 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
     parser.add_argument("-t", required=True, help="Target URL to test.")
+    parser.add_argument("--threads", required=False, default=10, help="Number of threads to use. (Default = 10)")
     parser.add_argument("--pyautogui", default=False, help="Use pyautogui to compare template")
     parser.add_argument("--output-dir", default="output/", help="Directory to save results.")
     parser.add_argument("--use-selenium", default=False, help="Use selenium for authentication checks.")
@@ -194,7 +195,7 @@ def main():
             print("Created Selenium Driver")
     
 
-    max_threads = 20
+    max_threads = args.threads
     # If given url is a file, read it line by line and run the templates on each line
     if os.path.isfile(args.t):
         with open(args.t, "r") as file:
