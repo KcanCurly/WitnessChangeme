@@ -17,7 +17,7 @@ from selenium.webdriver.support.expected_conditions import all_of
 from selenium.webdriver.common.by import By
 import threading
 from concurrent.futures import ThreadPoolExecutor
-import itertools
+from bs4 import BeautifulSoup
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -61,9 +61,18 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
                     template["verify_login2"](url, valid_lock, valid_template_lock, verbose)
                     return
 
+            soup = BeautifulSoup(response.text, 'html.parser')
+            title_tag = soup.title
+            if title_tag:
+                title_tag = title_tag.string.strip()
+            else:
+                title_tag = ""
+
             with valid_url_lock:
                 with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-                    file.write(f"{url}\n")    
+                    if title_tag != "":
+                        file.write(f"{url} => {title_tag}\n")
+                    else: file.write(f"{url}\n")
 
         except TimeoutError as timeout:
             with error_lock:
