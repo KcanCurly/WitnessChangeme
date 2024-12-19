@@ -3,7 +3,7 @@ import importlib
 import requests
 from requests.auth import HTTPDigestAuth
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
     with importlib.resources.path("templates", "") as a:
         b = os.path.join(a, "ipecs-ip-phone", "creds.txt")
@@ -17,14 +17,16 @@ def verify_login2(url, verbose = False):
         res = requests.get(url + "/web/home.asp", verify=False, auth=HTTPDigestAuth(username, password))
 
         if not "Unauthorized" in res.text:
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => IPECS IP PHONE => {username}:{password}\n")
+            with valid_lock:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => IPECS IP PHONE => {username}:{password}\n")
             print(f"{url} => IPECS IP PHONE => {username}:{password}")
             found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => IPECS IP PHONE\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => IPECS IP PHONE\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success

@@ -3,7 +3,7 @@ import importlib
 import requests
 from bs4 import BeautifulSoup
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
     with importlib.resources.path("templates", "") as a:
         b = os.path.join(a, "xorux-lpar2rrd", "creds.txt")
@@ -17,14 +17,16 @@ def verify_login2(url, verbose = False):
         res = requests.get(url + "/lpar2rrd/", verify=False, auth=(username, password))
 
         if not "Unauthorized" in res.text:
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => XORUX LPAR2RRD => {username}:{password}\n")
+            with valid_lock:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => XORUX LPAR2RRD => {username}:{password}\n")
             print(f"{url} => XORUX LPAR2RRD => {username}:{password}")
             found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => XORUX LPAR2RRD\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => XORUX LPAR2RRD\n")
 
     found = False
     for cred in credentials:
@@ -34,14 +36,31 @@ def verify_login2(url, verbose = False):
         res = requests.get(url + "/stor2rrd/", verify=False, auth=(username, password))
 
         if not "Unauthorized" in res.text:
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => XORUX STOR2RRD => {username}:{password}\n")
+            with valid_lock:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => XORUX STOR2RRD => {username}:{password}\n")
             print(f"{url} => XORUX STOR2RRD => {username}:{password}")
             found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => XORUX STOR2RRD\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => XORUX STOR2RRD\n")
+
+    found = False
+
+    res = requests.post(url + "/xormon/app/login", verify=False, data={"username":"admin@xormon.com", "password":"xorux4you"})
+
+    if res.status_code != "401":
+        with valid_lock:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => XORUX XORMON => admin@xormon.com:xorux4you\n")
+        print(f"{url} => XORUX XORMON => admin@xormon.com:xorux4you")
+    else:
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => XORUX XORMON\n")
+    
     
 
 def verify_login(driver, username, password):

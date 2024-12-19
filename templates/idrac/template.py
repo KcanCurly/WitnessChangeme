@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 import requests
 import re
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
     with importlib.resources.path("templates", "") as a:
         b = os.path.join(a, "idrac", "creds.txt")
@@ -22,14 +22,16 @@ def verify_login2(url, verbose = False):
         res = requests.post(base_url + extra, verify=False, headers={"user":username, "password": password})
 
         if '"authResult" : 7' in res.text:
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => IDRAC => {username}:{password}\n")
+            with valid_lock:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => IDRAC => {username}:{password}\n")
             print(f"{url} => IDRAC => {username}:{password}")
             found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => IDRAC\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => IDRAC\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success

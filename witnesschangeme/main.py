@@ -15,6 +15,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.expected_conditions import all_of
 from selenium.webdriver.common.by import By
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import itertools
 
 if os.name == "posix":
     from pyvirtualdisplay.display import Display
@@ -23,7 +26,14 @@ if os.name == "posix":
 from pkg_resources import resource_string, resource_listdir, resource_isdir
 disable_warnings(InsecureRequestWarning)
 
-def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, verbose):
+# Locks for file writing
+error_lock = threading.Lock()
+valid_lock = threading.Lock()
+valid_url_lock = threading.Lock()
+valid_template_lock = threading.Lock()
+know_bads_lock = threading.Lock()
+
+def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, known_bads_lock):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -32,12 +42,14 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
         if response.status_code >= 400:
             if verbose:
                 print(f"{url} => {response.status_code}")
-            with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {response.status_code}\n")
+            with error_lock:
+                with open("witnesschangeme-error.txt", "a") as file:
+                    file.write(f"{url} => {response.status_code}\n")
             return
     except Exception as e:
-        with open("witnesschangeme-error.txt", "a") as file:
-            file.write(f"{url} => {e.__class__.__name__}\n")
+        with error_lock:
+            with open("witnesschangeme-error.txt", "a") as file:
+                file.write(f"{url} => {e.__class__.__name__}\n")
         return
     
     if not selenium:
@@ -46,16 +58,22 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
                 if verbose:
                     print(f"Trying {template["name"]}")
                 if template["check"](response.text):
-                    template["verify_login2"](url, verbose)
-                    break
+                    template["verify_login2"](url, valid_lock, valid_template_lock, verbose)
+                    return
+
+            with valid_url_lock:
+                with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
+                    file.write(f"{url}\n")    
 
         except TimeoutError as timeout:
-            with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => Timeout\n")
+            with error_lock:
+                with open("witnesschangeme-error.txt", "a") as file:
+                    file.write(f"{url} => Timeout\n")
         except Exception as e:
-            with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {e.__class__.__name__}\n")
-                file.write(str(e))
+            with error_lock:
+                with open("witnesschangeme-error.txt", "a") as file:
+                    file.write(f"{url} => {e.__class__.__name__}\n")
+                    file.write(str(e))
 
         return
 
@@ -138,7 +156,6 @@ def authcheck(url, templates, driver: None, output_folder, pyautogui, selenium, 
             file.write(f"{url} => {e.__class__.__name__}\n")
         return     
 
-
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
     parser.add_argument("-t", required=True, help="Target URL to test.")
@@ -176,17 +193,25 @@ def main():
         if args.verbose:
             print("Created Selenium Driver")
     
+
+    max_threads = 20
     # If given url is a file, read it line by line and run the templates on each line
     if os.path.isfile(args.t):
-        with open(args.t, 'r') as file:
-            for line in file:
-                authcheck(line.strip(), templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose)
+        with open(args.t, "r") as file:
+            lines = [line.strip() for line in file]  # Strip newline characters
+
+            with ThreadPoolExecutor(max_threads) as executor:
+                executor.map(lambda url: authcheck(url, templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, know_bads_lock), lines)
+
+        # with open(args.t, 'r') as file:
+        #    for line in file:
+        #        authcheck(line.strip(), templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose)
                     
 
                     
     # If given url is simply a website, run the templates on the website
     else:
-        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose)
+        authcheck(args.t, templates, driver, args.output_dir, args.pyautogui, args.use_selenium, args.verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, know_bads_lock)
     
     if args.use_selenium:
         if args.verbose:

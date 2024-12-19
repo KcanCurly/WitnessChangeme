@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import quote
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
 
     with importlib.resources.path("templates", "") as a:
@@ -39,14 +39,16 @@ def verify_login2(url, verbose = False):
 
         for cookie in res.cookies:
             if "PHP" in cookie.name:
-                with open("witnesschangeme-valid.txt", "a") as file:
-                    file.write(f"{url} => MYQ => {username}:{password}\n")
+                with valid_lock:
+                    with open("witnesschangeme-valid.txt", "a") as file:
+                        file.write(f"{url} => MYQ => {username}:{password}\n")
                 print(f"{url} => MYQ => {username}:{password}")
                 found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => MYQ\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => MYQ\n")
 
 
 def verify_login(driver, username, password):

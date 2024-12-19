@@ -7,7 +7,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
 
     with importlib.resources.path("templates", "") as a:
@@ -36,15 +36,17 @@ def verify_login2(url, verbose = False):
 
 
                 if not "/iPages/i_login.asp?msg=2":
-                    with open("witnesschangeme-valid.txt", "a") as file:
-                        file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
-                        print(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
+                    with valid_lock:
+                        with open("witnesschangeme-valid.txt", "a") as file:
+                            file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
+                    print(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
 
                 break
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success

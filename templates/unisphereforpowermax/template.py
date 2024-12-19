@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 
-def verify_login2(url, verbose = False):
+def verify_login2(url, valid_lock, valid_template_lock, verbose = False):
     found = False
 
     with importlib.resources.path("templates", "") as a:
@@ -18,14 +18,16 @@ def verify_login2(url, verbose = False):
         password = cred[1]
         res = requests.post(url + "/restapi/common/login", auth=(username, password), timeout= 15, verify=False)
         if not "Unauthorized" in res.text:
-            with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
+            with valid_lock:
+                with open("witnesschangeme-valid.txt", "a") as file:
+                    file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
             print(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}")
             found = True
 
     if not found:
-        with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-            file.write(f"{url} => UNISPHERE FOR POWERMAX\n")
+        with valid_template_lock:
+            with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
+                file.write(f"{url} => UNISPHERE FOR POWERMAX\n")
 
 def verify_login(driver, username, password):
     # Logic to verify login success
