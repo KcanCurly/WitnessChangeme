@@ -9,7 +9,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     res = requests.get(url, timeout= 15, verify=False)
     res = requests.post(url + "/univmax/restapi/common/login", auth=(username, password), timeout= 15, verify=False, cookies=res.cookies, headers={
         # "Origin": url,
-        "Referer": url + "/univmax/",
+        # "Referer": url + "/univmax/",
         "RefererFullUrl": url + "/univmax/#/login",
         "U4V-REST-APP-NAME" : "univmax"
     })
