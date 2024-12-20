@@ -19,11 +19,11 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
         res = requests.get(url + extra, verify=False, timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        scripts = soup.findAll('script')
+        scripts = soup.find_all('script')
         print("before script")
         for script in scripts:
-            print("scripts")
-            if "loginToken" in script.string:
+            print(script)
+            if script.string and "loginToken" in script.string:
                 print("loginToken")
                 print(script.string)
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
