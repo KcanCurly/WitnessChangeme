@@ -7,7 +7,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     password = "smc"
 
     res = requests.post(url + "/univmax/restapi/common/login", auth=(username, password), timeout= 15, verify=False)
-    if not "Unauthorized" in res.text and res.status_code == 200:
+    if "Unauthorized" not in res.text and res.status_code == 200:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => UNISPHERE FOR POWERMAX => {username}:{password}\n")
