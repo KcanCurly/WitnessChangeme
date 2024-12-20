@@ -22,10 +22,12 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
         scripts = soup.find_all('script')
 
         for script in scripts:
-
             if script.string and "loginToken" in script.string:
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
                 login_token = match.group(1)
+                print(username)
+                print(password)
+                print(login_token)
                 res = requests.post(base_url + extra1, data={"username" : username, "password": password, "loginToken": login_token}, verify=False, timeout=15)
                 print(res.text)
                 if "/iPages/suntab.asp" in res.text and res.status_code == 200:
