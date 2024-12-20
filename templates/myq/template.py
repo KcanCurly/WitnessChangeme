@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import re
+import requests
 from urllib.parse import quote
 
 def verify_login(url, valid_lock, valid_template_lock, verbose = False):
