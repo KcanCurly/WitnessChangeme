@@ -1,3 +1,0 @@
-root:changeme
-admin:welcome1
-admin:changeme

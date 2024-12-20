@@ -1,0 +1,4 @@
+DD System Manager => sysadmin:abc123
+OceanStor => admin:Admin@storage
+Grafana => admin:admin
+Cisco Integrated Management Controller => admin:password, admin:Cisco1234
