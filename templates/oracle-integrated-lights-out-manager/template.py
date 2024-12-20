@@ -25,8 +25,9 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
                 login_token = match.group(1)
 
-                res = requests.post(base_url + extra, data={"username" : username, "password": password, "loginToken": login_token}, verify=False)
-
+                res = requests.post(base_url + extra, data={"username" : username, "password": password, "loginToken": login_token}, verify=False, timeout=15)
+                print(res.status_code)
+                print(res.text)
 
                 if "/iPages/suntab.asp" in res.text and res.status_code == 200:
                     with valid_lock:
