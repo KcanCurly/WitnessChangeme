@@ -88,7 +88,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         return
     
     bad = check_if_known_Bad(response.text)
-    if bad:
+    if bad is not None:
         with bads_lock:
             with open("witnesschangeme-known-bad.txt", "a") as file:
                 file.write(f"{url} => {bad}\n")
