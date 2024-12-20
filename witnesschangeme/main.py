@@ -54,7 +54,7 @@ def check_if_known_Bad(response):
         return "OpenManage"
     return None
 
-def authcheck(url, templates, output_folder, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
+def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -79,6 +79,16 @@ def authcheck(url, templates, output_folder, verbose, error_lock, valid_lock, va
             with open("witnesschangeme-known-bad.txt", "a") as file:
                 file.write(f"{url} => {bad}\n")
         return
+
+    # NO AUTH
+    if "Grafana" in response.text and "login" not in response.url:
+        with valid_lock:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => GRAFANA NO AUTH\n")
+    if "Elastic" in response.text and "login" not in response.url:
+        with valid_lock:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => ELASTIC NO AUTH\n")
 
 
     try:
@@ -116,7 +126,7 @@ def authcheck(url, templates, output_folder, verbose, error_lock, valid_lock, va
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Witnesschangeme - Website Authentication Checker")
+    parser = argparse.ArgumentParser(description="Witnesschangeme - Website Default Credentials Authentication Checker")
     parser.add_argument("-t", required=True, help="Target URL to test.")
     parser.add_argument("--threads", type=int, required=False, default=10, help="Number of threads to use. (Default = 10)")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")

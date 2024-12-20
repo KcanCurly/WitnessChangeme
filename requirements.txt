@@ -1,11 +1,3 @@
 setuptools
-selenium
-opencv-python
 requests
-pyautogui
-pyscreeze
-pillow
-pyvirtualdisplay
-xlib
-python-xlib
 bs4
