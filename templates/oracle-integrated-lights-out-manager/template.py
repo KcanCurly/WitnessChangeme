@@ -17,6 +17,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
         match = re.match(pattern, url)
         base_url = match.group(1)
         res = requests.get(url + extra, verify=False, timeout=15)
+        cookies = res.cookies
         soup = BeautifulSoup(res.text, 'html.parser')
 
         scripts = soup.find_all('script')
@@ -25,11 +26,9 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
             if script.string and "loginToken" in script.string:
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
                 login_token = match.group(1)
-                print(username)
-                print(password)
-                print(login_token)
-                res = requests.post(base_url + extra1, data={"username" : username, "password": password, "loginToken": login_token}, verify=False, timeout=15)
-                print(res.text)
+
+                res = requests.post(base_url + extra1, data={"username" : username, "password": password, "loginToken": login_token}, verify=False, timeout=15, cookies=cookies)
+
                 if "/iPages/suntab.asp" in res.text and res.status_code == 200:
                     with valid_lock:
                         with open("witnesschangeme-valid.txt", "a") as file:
