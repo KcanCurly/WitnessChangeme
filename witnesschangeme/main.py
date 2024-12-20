@@ -19,11 +19,12 @@ valid_lock = threading.Lock()
 valid_url_lock = threading.Lock()
 valid_template_lock = threading.Lock()
 known_bads_lock = threading.Lock()
+manual_lock = threading.Lock()
 
 def find_login(response):
     if "SAS Web Application Server" in response:
         return "/SASLogon/login"
-    return ""
+    return None
 
 def check_if_known_Bad(response):
     if "Dynatrace Managed" in response:
@@ -52,6 +53,19 @@ def check_if_known_Bad(response):
         return "PaperCut MobilityPrint"
     if "OpenManage" in response:
         return "OpenManage"
+    if "XenServer 7" in response:
+        return "Citrix XenServer 7"
+    if "TE-9-Login-Header.png" in response:
+        return "Tripwire Enterprise 9"
+    if "SSL Visibility Appliance" in response:
+        return "Symantec SSL Visibility"
+    if "IIS Windows Server":
+        return "IIS Windows Server"
+    return None
+
+def check_if_manual(response):
+    if "Sign in to RStudio" in response:
+        return "RSTUDIO => rstudio:rstudio"
     return None
 
 def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
@@ -74,10 +88,17 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         return
     
     bad = check_if_known_Bad(response.text)
-    if bad is not None:
+    if bad:
         with bads_lock:
             with open("witnesschangeme-known-bad.txt", "a") as file:
                 file.write(f"{url} => {bad}\n")
+        return
+
+    manual = check_if_manual(response.text)
+    if manual:
+        with manual_lock:
+            with open("witnesschangeme-manual.txt", "a") as file:
+                file.write(f"{url} => {manual}\n")
         return
 
     # NO AUTH

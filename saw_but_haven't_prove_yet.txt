@@ -1,3 +1,12 @@
 DD System Manager => sysadmin:abc123
 OceanStor => admin:Admin@storage
 Cisco Integrated Management Controller => admin:password, admin:Cisco1234
+Welcome to Nexus Dashboard => admin:admin
+iPECS IPCR => admin:admin, maybe admin:1234
+JBoss => admin:admin
+IBM Guardium => admin:guardium
+Symantec EDR => admin:admin
+Big IP Configuration Utility => admin:admin
+nvidia licensing portal => dls_admin:welcome
+minio => minioadmin:minioadmin
+CommunicationSuite => admin:admin
