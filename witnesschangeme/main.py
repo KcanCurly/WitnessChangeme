@@ -59,7 +59,7 @@ def check_if_known_Bad(response):
         return "Tripwire Enterprise 9"
     if "SSL Visibility Appliance" in response:
         return "Symantec SSL Visibility"
-    if "IIS Windows Server":
+    if "IIS Windows Server" in response:
         return "IIS Windows Server"
     return None
 
@@ -88,7 +88,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         return
     
     bad = check_if_known_Bad(response.text)
-    if bad is not None:
+    if bad:
         with bads_lock:
             with open("witnesschangeme-known-bad.txt", "a") as file:
                 file.write(f"{url} => {bad}\n")
