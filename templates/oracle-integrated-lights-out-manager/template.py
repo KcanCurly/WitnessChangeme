@@ -23,7 +23,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
         print("before script")
         for script in scripts:
             print("scripts")
-            if "loginToken" in script:
+            if "loginToken" in script.string:
                 print("loginToken")
                 print(script.string)
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
