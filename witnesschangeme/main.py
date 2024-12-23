@@ -21,10 +21,7 @@ valid_template_lock = threading.Lock()
 known_bads_lock = threading.Lock()
 manual_lock = threading.Lock()
 
-def find_login(response):
-    if "SAS Web Application Server" in response:
-        return "/SASLogon/login"
-    return None
+
 
 def check_if_known_Bad(response):
     if "Dynatrace Managed" in response:
@@ -61,11 +58,38 @@ def check_if_known_Bad(response):
         return "Symantec SSL Visibility"
     if "IIS Windows Server" in response:
         return "IIS Windows Server"
+    if "Unigy Management System" in response:
+        return "Unigy Management System"
+    if "STREAMS MESSAGING MANAGER" in response:
+        return "Streams Messaging Manager"
+    if "Aangine Automated Portfolio Planning" in response:
+        return "Aangine Automated Portfolio Planning"
+    if "UCMDB Server" in response:
+        return "UCMDB Server"
+    if "WCFDocumentControl Service" in response:
+        return "WCFDocumentControl Service"
+    if "Proofpoint Protection Server" in response:
+        return "Proofpoint Protection Server"
+    if "Isilon InsightIQ" in response:
+        return "Isilon InsightIQ"
+    if "NiFi" in response:
+        return "NiFi"
     return None
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
         return "RSTUDIO => rstudio:rstudio"
+    if "Sign in to Posit Workbench" in response:
+        return "POSIT WORKBENCH => rstudio:rstudio"
+    if "GetDocLink.ashx?link=logon_troubleshooting" in response:
+        return "Xperience => administrator:(blank)"
+    return None
+
+def find_login(response):
+    if "SAS Web Application Server" in response:
+        return "/SASLogon/login"
+    if "URL='/ui'" in response:
+        return "/ui/#/login"
     return None
 
 def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
@@ -148,7 +172,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Default Credentials Authentication Checker")
-    parser.add_argument("-t", required=True, help="Target URL to test.")
+    parser.add_argument("-t", required=True, help="Target URL/file to test.")
     parser.add_argument("--threads", type=int, required=False, default=10, help="Number of threads to use. (Default = 10)")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     args = parser.parse_args()
