@@ -74,6 +74,10 @@ def check_if_known_Bad(response):
         return "Isilon InsightIQ"
     if "NiFi" in response:
         return "NiFi"
+    if "HiveServer2" in response:
+        return "HiveServer2"
+    if "Argo CD" in response:
+        return "Argo CD"
     return None
 
 def check_if_manual(response):
