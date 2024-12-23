@@ -5,7 +5,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "hacluster"
     password = "hacluster"
 
-    res = requests.post(url, verify=False, data={"username":username, "password": password, "Login": "Login"})
+    res = requests.post(url + "/login", verify=False, data={"username":username, "password": password, "Login": "Login"})
     print(url)
     print(res.headers)
     if res.headers["Location"] == "/manage":
