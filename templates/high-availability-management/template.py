@@ -5,11 +5,8 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "hacluster"
     password = "hacluster"
 
-    res = requests.get(url + "/manage", verify=False)
-    print(res.cookies)
-    res = requests.post(url + "/login", verify=False, data={"username":username, "password": password, "Login": "Login"}, cookies=res.cookies)
-    print(res.status_code)
-    print(res.headers)
+    res = requests.post(url + "/login", allow_redirects=False, verify=False, data={"username":username, "password": password, "Login": "Login"})
+
     if res.headers["Location"] == "/manage":
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
