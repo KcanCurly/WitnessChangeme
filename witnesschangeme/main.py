@@ -78,6 +78,14 @@ def check_if_known_Bad(response):
         return "HiveServer2"
     if "Argo CD" in response:
         return "Argo CD"
+    if "Veritas Data Insight" in response:
+        return "Veritas Data Insight"
+    if "Structured Data Manager" in response:
+        return "Structured Data Manager"
+    if "Micro Focus Robotic Process Automation" in response:
+        return "Micro Focus Robotic Process Automation"
+    if "DEF Web Admin Tool" in response:
+        return "DEF Web Admin Tool"
     return None
 
 def check_if_manual(response):
