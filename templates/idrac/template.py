@@ -2,7 +2,7 @@ import requests
 import re
 
 def verify_login(url, valid_lock, valid_template_lock, verbose = False):
-
+    found = False
     username = "root"
     password = "calvin"
 

@@ -26,3 +26,4 @@ XtremIO Management => xmsadmin:Xtrem10, xmsadmin:123456
 Checkpoint Lights out Manager => admin:admin
 Dell ECS => root:ChangeMe
 Fortify Software Security Center => admin:admin
+Veritas Remote Management => sysadmin:P@ssw0rd

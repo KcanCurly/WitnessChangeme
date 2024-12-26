@@ -37,7 +37,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
     found = False
 
-    res = requests.post(url + "/xormon/app/login", verify=False, data={"username":"admin@xormon.com", "password":"xorux4you"})
+    res = requests.post(url + "/xormon/login", verify=False, data={"username":"admin@xormon.com", "password":"xorux4you"})
 
     if res.status_code != "401":
         with valid_lock:

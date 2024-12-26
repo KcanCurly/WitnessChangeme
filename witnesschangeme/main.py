@@ -104,6 +104,17 @@ def find_login(response):
         return "/ui/#/login"
     return None
 
+def find_title(url, response):
+    if "/cgi/login.cgi" in response and "Insyde Software" in response:
+        return "Veritas Remote Management"
+
+    soup = BeautifulSoup(response, 'html.parser')
+    title_tag = soup.title
+    if title_tag and title_tag.string != "":
+        return title_tag.string.strip()
+
+    return ""
+
 def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -142,10 +153,12 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => GRAFANA NO AUTH\n")
-    if "Elastic" in response.text and "login" not in response.url:
+        print(f"{url} => GRAFANA NO AUTH")
+    if "Loading Elastic" in response.text and "spaces/space_selector" in response.url:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => ELASTIC NO AUTH\n")
+        print(f"{url} => ELASTIC NO AUTH")
 
 
     try:
@@ -156,17 +169,11 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
                 template["verify_login"](url, valid_lock, valid_template_lock, verbose)
                 return
 
-        soup = BeautifulSoup(response.text, 'html.parser')
-        title_tag = soup.title
-        if title_tag:
-            title_tag = title_tag.string.strip()
-        else:
-            title_tag = ""
-
+        title = find_title(url, response.text)
         with valid_url_lock:
             with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-                if title_tag != "":
-                    file.write(f"{url} => {title_tag}\n")
+                if title != "":
+                    file.write(f"{url} => {title}\n")
                 else: file.write(f"{url}\n")
 
     except TimeoutError as timeout:
