@@ -39,7 +39,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
     res = requests.post(url + "/xormon/login", verify=False, data={"username":"admin@xormon.com", "password":"xorux4you"})
 
-    if res.status_code != "401":
+    if res.status_code != 401:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => XORUX XORMON => admin@xormon.com:xorux4you\n")
