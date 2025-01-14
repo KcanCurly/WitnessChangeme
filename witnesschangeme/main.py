@@ -86,6 +86,8 @@ def check_if_known_Bad(response):
         return "Micro Focus Robotic Process Automation"
     if "DEF Web Admin Tool" in response:
         return "DEF Web Admin Tool"
+    if "<title>DPA</title>" in response:
+        return "Data Protection Advisor"
     return None
 
 def check_if_manual(response):
