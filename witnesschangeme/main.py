@@ -88,6 +88,8 @@ def check_if_known_Bad(response):
         return "DEF Web Admin Tool"
     if "<title>DPA</title>" in response:
         return "Data Protection Advisor"
+    if "Proxmox Datacenter Manager" in response:
+        return "Proxmox Datacenter Manager"
     return None
 
 def check_if_manual(response):
