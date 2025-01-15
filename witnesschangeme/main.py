@@ -92,6 +92,10 @@ def check_if_known_Bad(response):
         return "Proxmox Datacenter Manager"
     if "<title>SAP XSEngine</title>" in response:
         return "SAP XSEngine"
+    if "<title>ManageEngine ServiceDesk Plus</title>" in response:
+        return "ManageEngine ServiceDesk Plus"
+    if "<title>RecoverPoint for VMs Plugin Server</title>" in response:
+        return "RecoverPoint for VMs Plugin Server"
     return None
 
 def check_if_manual(response):
