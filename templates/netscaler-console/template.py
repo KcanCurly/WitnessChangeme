@@ -14,6 +14,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
     res = requests.post(base_url + extra, verify=False, data=f"object=%7B%22login%22%3A%7B%22username%22%3A%22{username}%22%2C%22password%22%3A%22{password}%22%7D%7D")
     if not "ERROR" in res.text:
+        print(res.text)
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => NetScaler Console => {username}:{password}\n")
