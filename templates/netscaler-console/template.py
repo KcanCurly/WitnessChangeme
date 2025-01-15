@@ -12,8 +12,8 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     match = re.match(pattern, url)
     base_url = match.group(1)
 
-    res = requests.post(base_url + extra, verify=False, data=f"object=%7B%22login%22%3A%7B%22username%22%3A%22{username}%22%2C%22password%22%3A%22{password}%22%7D%7D")
-    print(base_url + extra)
+    res = requests.post(base_url + extra, verify=False, headers={"NITRO_WEB_APPLICATION": "true", "Content-Type": "application/x-www-form-urlencoded"}, data=f"object=%7B%22login%22%3A%7B%22username%22%3A%22{username}%22%2C%22password%22%3A%22{password}%22%7D%7D")
+
     if not "ERROR" in res.text:
         print(res.text)
         with valid_lock:
