@@ -7,13 +7,13 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "nsroot"
     password = "nsroot"
 
-    extra= '/admin_ui/mas/ent/login.html'
+    extra= '/nitro/v1/config/login'
     pattern = r'^(https?://[^/]+)'
     match = re.match(pattern, url)
     base_url = match.group(1)
 
     res = requests.post(base_url + extra, verify=False, data=f"object=%7B%22login%22%3A%7B%22username%22%3A%22{username}%22%2C%22password%22%3A%22{password}%22%7D%7D")
-    print(base_url + extra)
+
     if not "ERROR" in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
