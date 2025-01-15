@@ -90,6 +90,8 @@ def check_if_known_Bad(response):
         return "Data Protection Advisor"
     if "Proxmox Datacenter Manager" in response:
         return "Proxmox Datacenter Manager"
+    if "<title>SAP XSEngine</title>" in response:
+        return "SAP XSEngine"
     return None
 
 def check_if_manual(response):
