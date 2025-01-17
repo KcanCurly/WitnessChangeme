@@ -7,7 +7,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     password = "admin"
     extra = "/login"
     res = requests.post(url + extra, json={"user" : username, "password": password})
-    print(res.text)
+
     if "Logged in" in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
