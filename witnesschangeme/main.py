@@ -10,6 +10,7 @@ from urllib3 import disable_warnings
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
+import re
 
 disable_warnings(InsecureRequestWarning)
 
@@ -23,85 +24,96 @@ manual_lock = threading.Lock()
 
 
 
-def check_if_known_Bad(response):
-    if "Dynatrace Managed" in response:
+def check_if_known_Bad(response: requests.Response):
+    for header, value in response.headers.items():
+        if "ClickHouse" in header: return "ClickHouse"
+
+    if "Dynatrace Managed" in response.text:
         return "Dynatrace Managed"
-    if "ExchangeService Service" in response:
+    if "ExchangeService Service" in response.text:
         return "ExchangeService Service"
-    if "This is a Windows© Communication Foundation service" in response:
+    if "This is a Windows© Communication Foundation service" in response.text:
         return "Windows© Communication Foundation service"
-    if "Node Exporter" in response:
+    if "Node Exporter" in response.text:
         return "Node Exporter"
-    if "Humio bulk ingest endpoint" in response:
+    if "Humio bulk ingest endpoint" in response.text:
         return "Humio bulk ingest endpoint"
-    if "Edison Forever!" in response:
+    if "Edison Forever!" in response.text:
         return "Edison Forever"
-    if "Outlook" in response:
+    if "Outlook" in response.text:
         return "Outlook"
-    if "Web Tools" and "Element Manager" in response:
+    if "Web Tools" and "Element Manager" in response.text:
         return "Broadcom Web Tools Element Manager"
-    if "Nessus Scanner" in response:
+    if "Nessus Scanner" in response.text:
         return "Nessus Scanner"
-    if "SOAP Plugin - Source Node Status" in response:
+    if "SOAP Plugin - Source Node Status" in response.text:
         return "SOAP Plugin - Source Node Status"
-    if "Welcome to VMware Aria Operations" in response:
+    if "Welcome to VMware Aria Operations" in response.text:
         return "Welcome to VMware Aria Operations"
-    if "PaperCut Software" and "login-illo" in response:
+    if "PaperCut Software" and "login-illo" in response.text:
         return "PaperCut MobilityPrint"
-    if "OpenManage" in response:
+    if "OpenManage" in response.text:
         return "OpenManage"
-    if "XenServer 7" in response:
+    if "XenServer 7" in response.text:
         return "Citrix XenServer 7"
-    if "TE-9-Login-Header.png" in response:
+    if "TE-9-Login-Header.png" in response.text:
         return "Tripwire Enterprise 9"
-    if "SSL Visibility Appliance" in response:
+    if "SSL Visibility Appliance" in response.text:
         return "Symantec SSL Visibility"
-    if "IIS Windows Server" in response:
+    if "IIS Windows Server" in response.text:
         return "IIS Windows Server"
-    if "Unigy Management System" in response:
+    if "Unigy Management System" in response.text:
         return "Unigy Management System"
-    if "STREAMS MESSAGING MANAGER" in response:
+    if "STREAMS MESSAGING MANAGER" in response.text:
         return "Streams Messaging Manager"
-    if "Aangine Automated Portfolio Planning" in response:
+    if "Aangine Automated Portfolio Planning" in response.text:
         return "Aangine Automated Portfolio Planning"
-    if "UCMDB Server" in response:
+    if "UCMDB Server" in response.text:
         return "UCMDB Server"
-    if "WCFDocumentControl Service" in response:
+    if "WCFDocumentControl Service" in response.text:
         return "WCFDocumentControl Service"
-    if "Proofpoint Protection Server" in response:
+    if "Proofpoint Protection Server" in response.text:
         return "Proofpoint Protection Server"
-    if "Isilon InsightIQ" in response:
+    if "Isilon InsightIQ" in response.text:
         return "Isilon InsightIQ"
-    if "NiFi" in response:
+    if "NiFi" in response.text:
         return "NiFi"
-    if "HiveServer2" in response:
+    if "HiveServer2" in response.text:
         return "HiveServer2"
-    if "Argo CD" in response:
+    if "Argo CD" in response.text:
         return "Argo CD"
-    if "Veritas Data Insight" in response:
+    if "Veritas Data Insight" in response.text:
         return "Veritas Data Insight"
-    if "Structured Data Manager" in response:
+    if "Structured Data Manager" in response.text:
         return "Structured Data Manager"
-    if "Micro Focus Robotic Process Automation" in response:
+    if "Micro Focus Robotic Process Automation" in response.text:
         return "Micro Focus Robotic Process Automation"
-    if "DEF Web Admin Tool" in response:
+    if "DEF Web Admin Tool" in response.text:
         return "DEF Web Admin Tool"
-    if "<title>DPA</title>" in response:
+    if "<title>DPA</title>" in response.text:
         return "Data Protection Advisor"
-    if "Proxmox Datacenter Manager" in response:
+    if "Proxmox Datacenter Manager" in response.text:
         return "Proxmox Datacenter Manager"
-    if "<title>SAP XSEngine</title>" in response:
+    if "<title>SAP XSEngine</title>" in response.text:
         return "SAP XSEngine"
-    if "<title>ManageEngine ServiceDesk Plus</title>" in response:
+    if "<title>ManageEngine ServiceDesk Plus</title>" in response.text:
         return "ManageEngine ServiceDesk Plus"
-    if "<title>RecoverPoint for VMs Plugin Server</title>" in response:
+    if "<title>RecoverPoint for VMs Plugin Server</title>" in response.text:
         return "RecoverPoint for VMs Plugin Server"
-    if "<title>Coriolis</title>" in response:
+    if "<title>Coriolis</title>" in response.text:
         return "Coriolis"
-    if "data-netbox-version" in response:
+    if "data-netbox-version" in response.text:
         return "Netbox"
-    if "<title>WS server test page</title>" in response:
+    if "<title>WS server test page</title>" in response.text:
         return "WS server test page"
+    if "fitalimicon.png" in response.text:
+        return "FIT ALIM"
+    if "Highest contiguous completed opid" in response.text:
+        return "Cerebro Metrics"
+    if "LibreNMS" in response.text:
+        return "LibreNMS"
+    if "VMware vSphere is virtual infrastructure software for partitioning" in response.text:
+        return "Vmware vSphere Welcome Page"
     return None
 
 def check_if_manual(response):
@@ -111,6 +123,8 @@ def check_if_manual(response):
         return "POSIT WORKBENCH => rstudio:rstudio"
     if "GetDocLink.ashx?link=logon_troubleshooting" in response:
         return "Xperience => administrator:(blank)"
+    if "Enable it to login into Central server" in response:
+        return "Endpoint Central => admin:admin"
     return None
 
 def find_login(response):
@@ -127,17 +141,28 @@ def find_title(url, response):
 
     soup = BeautifulSoup(response, 'html.parser')
     title_tag = soup.title
-    if title_tag and title_tag.string != "":
+    if title_tag and title_tag.string:
         return title_tag.string.strip()
 
     return ""
 
-def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock):
+def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed = False):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     try:
         response = requests.get(url, allow_redirects=True, headers=headers, verify=False, timeout=15)
+
+        # Find if there was a redirect thru meta tag
+        match = re.search(r'<meta .*;URL=(.*)\s*', response.text, re.IGNORECASE)
+        if match:
+            redirect_url = match.group(1)
+            redirect_url = redirect_url.strip("'")
+            redirect_url = redirect_url.strip("\"")
+            redirect_url = redirect_url.strip(".")
+            authcheck(url + redirect_url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed)
+            return
+
         if response.status_code >= 400:
             if verbose:
                 print(f"{url} => {response.status_code}")
@@ -145,13 +170,18 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
                 with open("witnesschangeme-error.txt", "a") as file:
                     file.write(f"{url} => {response.status_code}\n")
             return
+        if response.headers.get("Content-Length") == "0":
+            with bads_lock:
+                with open("witnesschangeme-known-bad.txt", "a") as file:
+                    file.write(f"{url} => Empty\n")
+            return
     except Exception as e:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url} => {e.__class__.__name__}\n")
         return
     
-    bad = check_if_known_Bad(response.text)
+    bad = check_if_known_Bad(response)
     if bad:
         with bads_lock:
             with open("witnesschangeme-known-bad.txt", "a") as file:
@@ -187,23 +217,30 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
                 return
 
         title = find_title(url, response.text)
+        # vmware esxi    # In website was not identified, so we tried to identify it:
+        if not wasprocessed:
+            if """<meta http-equiv="refresh" content="0;URL='/ui'"/>""" in response.text:
+                authcheck(url + "/ui", templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, True)
+                return
+
         with valid_url_lock:
             with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
                 if title != "":
                     file.write(f"{url} => {title}\n")
                 else: file.write(f"{url}\n")
+                return
 
     except TimeoutError as timeout:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url} => Timeout\n")
+                return
     except Exception as e:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url} => {e.__class__.__name__}\n")
                 file.write(str(e))
-
-    return
+                return
 
 
 def main():
