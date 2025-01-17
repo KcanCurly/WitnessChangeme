@@ -98,6 +98,10 @@ def check_if_known_Bad(response):
         return "RecoverPoint for VMs Plugin Server"
     if "<title>Coriolis</title>" in response:
         return "Coriolis"
+    if "data-netbox-version" in response:
+        return "Netbox"
+    if "<title>WS server test page</title>" in response:
+        return "WS server test page"
     return None
 
 def check_if_manual(response):
@@ -116,6 +120,7 @@ def find_login(response):
         return "/ui/#/login"
     return None
 
+# TO DO:
 def find_title(url, response):
     if "/cgi/login.cgi" in response and "Insyde Software" in response:
         return "Veritas Remote Management"

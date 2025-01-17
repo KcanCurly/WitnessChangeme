@@ -23,7 +23,8 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
 def check(source_code):
     return "logon_merge.gif" in source_code or \
-            "ftnt-fortinet-grid" in source_code
+            "ftnt-fortinet-grid" in source_code or \
+            "<title>FortiGate</title>" in source_code
 
 def get_template():
     return {
