@@ -96,6 +96,8 @@ def check_if_known_Bad(response):
         return "ManageEngine ServiceDesk Plus"
     if "<title>RecoverPoint for VMs Plugin Server</title>" in response:
         return "RecoverPoint for VMs Plugin Server"
+    if "<title>Coriolis</title>" in response:
+        return "Coriolis"
     return None
 
 def check_if_manual(response):
