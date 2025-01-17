@@ -6,7 +6,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "admin"
     password = "admin"
     extra = "/login"
-    res = requests.post(url + extra, json={"user" : username, "password": password}, headers={"x-grafana-device-id":"992156a83f9aaccb52bf1z17496772d2"})
+    res = requests.post(url + extra, json={"user" : username, "password": password})
     print(res.text)
     if "Logged in" in res.text:
         with valid_lock:
