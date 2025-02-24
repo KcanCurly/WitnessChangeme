@@ -130,6 +130,10 @@ def check_if_known_Bad(response: requests.Response):
         return "WebSphere Liberty"
     if "<title>Headlamp Debug Server</title>" in response.text: # No login
         return "Headlamp Debug Server"
+    if "<title>Ivanti System Manager: Sign In</title>" in response.text: # No default password
+        return "Ivanti System Manager"
+    if "Couchbase Console - FICO Edition</title>" in response.text: # No default password
+        return "Couchbase Console - FICO Edition"
     return None
 
 def check_if_manual(response):
@@ -141,6 +145,8 @@ def check_if_manual(response):
         return "Xperience => administrator:(blank)"
     if "Enable it to login into Central server" in response:
         return "Endpoint Central => admin:admin"
+    if "ecs-loader" in response:
+        return "DELL EMC ECS => root:ChangeMe emcsecurity:ChangeMe"
     return None
 
 def find_login(response):
