@@ -134,6 +134,18 @@ def check_if_known_Bad(response: requests.Response):
         return "Ivanti System Manager"
     if "Couchbase Console - FICO Edition</title>" in response.text: # No default password
         return "Couchbase Console - FICO Edition"
+    if "<title>Cisco Unified Intelligence Center</title>" in response.text: # No default password
+        return "Cisco Unified Intelligence Center"
+    if "<title>Log In - Confluence</title>" in response.text: # No default password
+        return "Confluence"
+    if "<title>Login - AppViewX</title>" in response.text: # No default password
+        return "AppViewX"
+    if "IA:IM: Login" in response.text: # No default poassword
+        return "IBM Automation Infrastructure Management"
+    if "<title>VMware Skyline Health Diagnostics</title>" in response.text:
+        return "VMware Skyline Health Diagnostics"
+    if "<title>Wowza Streaming Engine Manager</title>" in response.text:
+        return "Wowza Streaming Engine Manager"
     return None
 
 def check_if_manual(response):
@@ -147,6 +159,8 @@ def check_if_manual(response):
         return "Endpoint Central => admin:admin"
     if "ecs-loader" in response:
         return "DELL EMC ECS => root:ChangeMe emcsecurity:ChangeMe"
+    if "<title>Allegro Packets Network Multimeter - Login</title>" in response:
+        return "Allegro Packets Network Multimeter => admin:allegro"
     return None
 
 def find_login(response):
