@@ -6,7 +6,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "admin@localhost"
     password = "Newpassword6"
 
-    res = requests.post(url + "/config", verify=False, auth=(username, password))
+    res = requests.get(url + "/config", verify=False, auth=(username, password))
 
     if res.status_code in [200]:
         with valid_lock:
