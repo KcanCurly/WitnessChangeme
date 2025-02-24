@@ -194,7 +194,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
     except Exception as e:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {e.__class__.__name__}\n")
+                file.write(f"{url} => {e.__class__.__name__} {e}\n")
         return
     
     bad = check_if_known_Bad(response)
