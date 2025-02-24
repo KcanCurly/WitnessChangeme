@@ -44,7 +44,7 @@ def check_if_known_Bad(response: requests.Response):
         return "Outlook"
     if "Web Tools" and "Element Manager" in response.text:
         return "Broadcom Web Tools Element Manager"
-    if "Nessus Scanner" in response.text:
+    if "<title>Nessus</title>" in response.text:
         return "Nessus Scanner"
     if "SOAP Plugin - Source Node Status" in response.text:
         return "SOAP Plugin - Source Node Status"
@@ -62,7 +62,7 @@ def check_if_known_Bad(response: requests.Response):
         return "Symantec SSL Visibility"
     if "IIS Windows Server" in response.text:
         return "IIS Windows Server"
-    if "Unigy Management System" in response.text:
+    if "Unigy Management System" in response.text or "Unigy(TM) Management System" in response.text:
         return "Unigy Management System"
     if "STREAMS MESSAGING MANAGER" in response.text:
         return "Streams Messaging Manager"
@@ -114,6 +114,22 @@ def check_if_known_Bad(response: requests.Response):
         return "LibreNMS"
     if "VMware vSphere is virtual infrastructure software for partitioning" in response.text:
         return "Vmware vSphere Welcome Page"
+    if "<title>Swagger UI</title>" in response.text: # No login
+        return "Swagger UI"
+    if "<title>Kubernetes Dashboard</title>" in response.text: # No default password
+        return "Kubernetes Dashboard"
+    if "<title>IBM Tivoli Monitoring Service Index</title>" in response.text: # No login
+        return "IBM Tivoli Monitoring Service Index"
+    if "<title>Finesse</title>" in response.text: # No default password
+        return "Cisco Finesse" 
+    if "<title>RMF Data Portal</title>" in response.text: # No login
+        return "RMF Data Portal"
+    if "<title>Cisco Meeting Server web app</title>" in response.text: # No default password
+        return "Cisco Meeting Server web app"
+    if "<title>WebSphere Liberty" in response.text: # No default password
+        return "WebSphere Liberty"
+    if "<title>Headlamp Debug Server</title>" in response.text: # No login
+        return "Headlamp Debug Server"
     return None
 
 def check_if_manual(response):
