@@ -146,6 +146,10 @@ def check_if_known_Bad(response: requests.Response):
         return "VMware Skyline Health Diagnostics"
     if "<title>Wowza Streaming Engine Manager</title>" in response.text:
         return "Wowza Streaming Engine Manager"
+    if "<title>Qlik NPrinting</title>" in response.text:
+        return "Qlik NPrinting"
+    if "<title>Identity Service Management</title>" in response.text:
+        return "Identity Service Management"
     return None
 
 def check_if_manual(response):
