@@ -26,7 +26,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
                 file.write(f"{url} => IRIS ID iCAM\n")
 
 def check(source_code):
-    return "Pacemaker/Corosync Configuration" in source_code
+    return "<title>Iris ID - iCAM Configuration</title>" in source_code
 
 def get_template():
     return {
