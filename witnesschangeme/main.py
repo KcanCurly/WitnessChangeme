@@ -9,10 +9,12 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 import re
+import warnings
 
 disable_warnings(InsecureRequestWarning)
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 # Locks for file writing
 error_lock = threading.Lock()
