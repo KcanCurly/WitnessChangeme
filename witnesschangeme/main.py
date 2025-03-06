@@ -22,7 +22,18 @@ valid_template_lock = threading.Lock()
 known_bads_lock = threading.Lock()
 manual_lock = threading.Lock()
 
-
+def post_http_status(url):
+    extras_to_try=[
+        "/auth/admin/master/console",
+    ]
+    title = ""
+    for extra in extras_to_try:
+        response = requests.get(url + extra, allow_redirects=True, verify=False, timeout=15)
+        if response.status_code in [200]:
+            if "keycloak" in response:
+                title = "keycloak"
+            return title, url + extra
+    return None, None
 
 def check_if_known_Bad(response: requests.Response):
     for header, value in response.headers.items():
@@ -204,6 +215,17 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
             return
 
         if response.status_code >= 400:
+            
+            title, url = post_http_status(url)
+
+            # We find the viable url out of url that returned bad status code
+            if url:
+                with valid_url_lock:
+                    with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
+                        if title != "":
+                            file.write(f"{url} => {title}\n")
+                        else: file.write(f"{url}\n")
+                return
             if verbose:
                 print(f"{url} => {response.status_code}")
             with error_lock:
