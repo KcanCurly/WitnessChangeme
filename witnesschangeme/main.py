@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 import re
 import warnings
+import socket
 
 disable_warnings(InsecureRequestWarning)
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
@@ -203,6 +204,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
+    hostname = None
     try:
         response = requests.get(url, allow_redirects=True, headers=headers, verify=False, timeout=15)
 
@@ -215,48 +217,56 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
             redirect_url = redirect_url.strip(".")
             authcheck(url + redirect_url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed)
             return
+        try:
+            pattern = r'https?://(.*)'
+            match_hostname = re.match(pattern, url)
+            if match_hostname:
+                ip = match_hostname.group(1)
+
+                hostname, _, _ = socket.gethostbyaddr(ip)
+        except:pass
 
         if response.status_code >= 400:
             
-            title, url = post_http_status(url)
+            title, url2 = post_http_status(url)
 
             # We find the viable url out of url that returned bad status code
-            if url:
+            if url2:
                 with valid_url_lock:
                     with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
                         if title != "":
-                            file.write(f"{url} => {title}\n")
-                        else: file.write(f"{url}\n")
+                            file.write(f"{url2} => {title}\n")
+                        else: file.write(f"{url2} | {hostname if hostname else ""} \n")
                 return
             if verbose:
                 print(f"{url} => {response.status_code}")
             with error_lock:
                 with open("witnesschangeme-error.txt", "a") as file:
-                    file.write(f"{url} => {response.status_code}\n")
+                    file.write(f"{url}{f" | {hostname}" if hostname else ""} => {response.status_code}\n")
             return
         if response.headers.get("Content-Length") == "0":
             with bads_lock:
                 with open("witnesschangeme-known-bad.txt", "a") as file:
-                    file.write(f"{url} => Empty\n")
+                    file.write(f"{url}{f" | {hostname}" if hostname else ""} => Empty\n")
             return
     except Exception as e:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {e.__class__.__name__} {e}\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => {e.__class__.__name__} {e}\n")
         return
     
     bad = check_if_known_Bad(response)
     if bad:
         with bads_lock:
             with open("witnesschangeme-known-bad.txt", "a") as file:
-                file.write(f"{url} => {bad}\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => {bad}\n")
         return
 
     manual = check_if_manual(response.text)
     if manual:
         with manual_lock:
             with open("witnesschangeme-manual.txt", "a") as file:
-                file.write(f"{url} => {manual}\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => {manual}\n")
         return
 
     # NO AUTH
@@ -264,12 +274,12 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => GRAFANA NO AUTH\n")
-        print(f"{url} => GRAFANA NO AUTH")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => GRAFANA NO AUTH")
     if "Loading Elastic" in response.text and "spaces/space_selector" in response.url:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => ELASTIC NO AUTH\n")
-        print(f"{url} => ELASTIC NO AUTH")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => ELASTIC NO AUTH")
 
 
     try:
@@ -297,19 +307,20 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
     except TimeoutError as timeout:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => Timeout\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => Timeout\n")
                 return
     except Exception as e:
         with error_lock:
             with open("witnesschangeme-error.txt", "a") as file:
-                file.write(f"{url} => {e.__class__.__name__} {e}\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => {e.__class__.__name__} {e}\n")
                 return
 
 
 def main():
     parser = argparse.ArgumentParser(description="Witnesschangeme - Website Default Credentials Authentication Checker")
     parser.add_argument("-t", required=True, help="Target URL/file to test.")
-    parser.add_argument("--threads", type=int, required=False, default=10, help="Number of threads to use. (Default = 10)")
+    parser.add_argument("--threads", type=int, default=10, help="Number of threads to use. (Default = 10)")
+    parser.add_argument("--dns-ip", type=str, help="DNS ip to do reverse DNS lookup")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     args = parser.parse_args()
 
