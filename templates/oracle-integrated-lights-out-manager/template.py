@@ -1,12 +1,21 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+import socket
 
 def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     found = False
 
     credentials = ["root:changeme", "admin:welcome1", "admin:changeme"]
+    hostname = None
+    try:
+        pattern = r'https?://(.*):'
+        match_hostname = re.match(pattern, url)
+        if match_hostname:
+            ip = match_hostname.group(1)
 
+            hostname, _, _ = socket.gethostbyaddr(ip)
+    except:pass
     for cred in credentials:
         cred = cred.split(":")
         username = cred[0]
@@ -24,6 +33,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
         for script in scripts:
             if script.string and "loginToken" in script.string:
+
                 match = re.search(r'"loginToken", "(.*?)"\);', script.string)
                 login_token = match.group(1)
 
@@ -32,15 +42,15 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
                 if "/iPages/suntab.asp" in res.text and res.status_code == 200:
                     with valid_lock:
                         with open("witnesschangeme-valid.txt", "a") as file:
-                            file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
-                    print(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
+                            file.write(f"{url}{f" | {hostname}" if hostname else ""} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}\n")
+                    print(f"{url}{f" | {hostname}" if hostname else ""} => ORACLE INTEGRATED LIGHTS OUT MANAGER => {username}:{password}")
 
                 break
 
     if not found:
         with valid_template_lock:
             with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-                file.write(f"{url} => ORACLE INTEGRATED LIGHTS OUT MANAGER\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => ORACLE INTEGRATED LIGHTS OUT MANAGER\n")
 
 def check(source_code):
     return "Integrated Lights Out Manager" in source_code

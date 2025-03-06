@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import requests
 from urllib.parse import quote
+import socket
 
 def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     found = False
@@ -28,18 +29,26 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     pwd=password
 
     res = requests.post(url, verify=False, timeout= 15, data={"wsfState" : quote(wsfState), "wsfRequestId": wsfRequestId, "C7": C7, "pwd": pwd})
+    hostname = None
+    try:
+        pattern = r'https?://(.*):'
+        match_hostname = re.match(pattern, url)
+        if match_hostname:
+            ip = match_hostname.group(1)
 
+            hostname, _, _ = socket.gethostbyaddr(ip)
+    except:pass
     if not "errorMsg" in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
-                file.write(f"{url} => MYQ => {username}:{password}\n")
-        print(f"{url} => MYQ => {username}:{password}")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => MYQ => {username}:{password}\n")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => MYQ => {username}:{password}")
         found = True
 
     if not found:
         with valid_template_lock:
             with open("witnesschangeme-valid-template-no-credential.txt", "a") as file:
-                file.write(f"{url} => MYQ\n")
+                file.write(f"{url}{f" | {hostname}" if hostname else ""} => MYQ\n")
 
 
 def check(source_code):
