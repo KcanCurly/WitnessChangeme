@@ -235,8 +235,8 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
                 with valid_url_lock:
                     with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
                         if title != "":
-                            file.write(f"{url2} => {title}\n")
-                        else: file.write(f"{url2} | {hostname if hostname else ""} \n")
+                            file.write(f"{url2}{f" | {hostname}" if hostname else ""} => {title}\n")
+                        else: file.write(f"{url2}{f" | {hostname}" if hostname else ""}\n")
                 return
             if verbose:
                 print(f"{url} => {response.status_code}")
