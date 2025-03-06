@@ -218,7 +218,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
             authcheck(url + redirect_url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed)
             return
         try:
-            pattern = r'https?://(.*)'
+            pattern = r'https?://(.*):'
             match_hostname = re.match(pattern, url)
             if match_hostname:
                 ip = match_hostname.group(1)
