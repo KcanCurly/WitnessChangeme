@@ -194,7 +194,10 @@ def check_if_known_Bad(response: requests.Response):
         return "Cisco Webex" # No default password
     if "window['nprintingVersion']" in response.text and "window['npProject'] = \"newsstand\"":
         return "NPRinting NewsStand" # No default password
-
+    if "NodeManager information" in response.text and "hadoop" in response.text:
+        return "hadoop" # No login page
+    if "it works!" in response.text.lower():
+        return "it works!" # No login page
     return None
 
 def check_if_manual(response):
