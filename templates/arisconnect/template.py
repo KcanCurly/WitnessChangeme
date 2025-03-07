@@ -8,7 +8,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     username = "system"
     password = "manager"
 
-    res = requests.post(url + "/login", verify=False, data={"alias":username, "password": password})
+    res = requests.post(url + "/login", verify=False, data={"schema": "0", "alias":username, "password": password})
     hostname = None
     try:
         pattern = r'https?://(.*):'
