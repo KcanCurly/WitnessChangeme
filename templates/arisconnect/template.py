@@ -7,9 +7,6 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
     username = "system"
     password = "manager"
-
-    res = requests.post(url + "/login", verify=False, data={"schema": "0", "alias":username, "password": password})
-    hostname = None
     try:
         pattern = r'https?://(.*):'
         match_hostname = re.match(pattern, url)
@@ -18,6 +15,10 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
             hostname, _, _ = socket.gethostbyaddr(ip)
     except:pass
+    res = requests.post(url + "/copernicus/default/service/login", verify=False, data={"schema": "0", "alias":username, "password": password})
+    hostname = None
+
+    
     if "SUCCESSFUL" in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
