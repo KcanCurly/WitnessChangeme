@@ -280,7 +280,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
                 with open("witnesschangeme-error.txt", "a") as file:
                     file.write(f"{url}{f" | {hostname}" if hostname else ""} => {response.status_code}\n")
             return
-        if response.headers.get("Content-Length") == "0" or response.text.lower() == "ok":
+        if response.headers.get("Content-Length") == "0" or response.text.lower() == "ok" or response.text.lower() == "hello world!":
             with bads_lock:
                 with open("witnesschangeme-known-bad.txt", "a") as file:
                     file.write(f"{url}{f" | {hostname}" if hostname else ""} => Empty or 'OK'\n")
