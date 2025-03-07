@@ -154,7 +154,7 @@ def check_if_known_Bad(response: requests.Response):
         return "Confluence"
     if "<title>Login - AppViewX</title>" in response.text: # No default password
         return "AppViewX"
-    if "IA:IM: Login" in response.text: # No default poassword
+    if "IA:IM: Login" in response.text: # No default password
         return "IBM Automation Infrastructure Management"
     if "<title>VMware Skyline Health Diagnostics</title>" in response.text:
         return "VMware Skyline Health Diagnostics"
@@ -164,6 +164,37 @@ def check_if_known_Bad(response: requests.Response):
         return "Qlik NPrinting"
     if "<title>Identity Service Management</title>" in response.text:
         return "Identity Service Management"
+    if "cuicui" in response.text: # No default password
+        return "Cisco Unified Intelligence Center"
+    if "Identity Services Engine" in response.text:
+        return "Cisco Identity Services Engine" # No default password
+    if "Cisco Virtualized Voice Browser" in response.text:
+        return "Cisco Virtualized Voice Browser Portal" # No default password no login page
+    if "Cisco Unified Communications Manager" in response.text:
+        return "Cisco Unified Communications Manager" # No default password no login page
+    if "URL=/verba/" in response.text:
+        return "VERINT Verba" # No default password
+    if "Cisco Unified Communications Manager" in response.text or "Cisco Unified Communications Self Care Portal" in response.text:
+        return "Cisco Unified Communications Manager/Self Care Portal Portal" # No default password no login page
+    if "<title>RSA Security Analytics Login</title>" in response.text:
+        return "RSA Security Analytics" # No default password
+    if "FortiWeb" in response.text:
+        return "FortiWeb" # No default password
+    if "You Know, for Search" in response.text:
+        return "Elastic cluster version endpoint" # No login
+    if "Installed Applications" in response.text and "Cisco Systems logo" in response.text:
+        return "Cisco generic portal" # No login
+    if "ephemeral_id" in response.text and "username" in response.text and "pipeline" in response.text:
+        return "Generic logstash version portal" # No login
+    if "/core/console/console.html" in response.url:
+        return "Dell OpenManage Enterprise" # No login
+    if "Serv-U FTP Server" in response.text:
+        return "Serv-U FTP Server" # No default password
+    if "Please return to Webex Control Hub" in response.text:
+        return "Cisco Webex" # No default password
+    if "window['nprintingVersion']" in response.text and "window['npProject'] = \"newsstand\"":
+        return "NPRinting NewsStand" # No default password
+
     return None
 
 def check_if_manual(response):
@@ -190,14 +221,16 @@ def find_login(response):
 
 # TO DO:
 def find_title(url, response):
-    if "/cgi/login.cgi" in response and "Insyde Software" in response:
-        return "Veritas Remote Management"
-
     soup = BeautifulSoup(response, 'html.parser')
     title_tag = soup.title
     if title_tag and title_tag.string:
         return title_tag.string.strip()
 
+    if "/cgi/login.cgi" in response and "Insyde Software" in response:
+        return "Veritas Remote Management"
+    if "https://tomcat.apache.org" in response:
+        return "Tomcat (No Version)"
+    
     return ""
 
 def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed = False):
@@ -209,7 +242,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         response = requests.get(url, allow_redirects=True, headers=headers, verify=False, timeout=15)
 
         # Find if there was a redirect thru meta tag
-        match = re.search(r'<meta .*;URL=(.*)\s*', response.text, re.IGNORECASE)
+        match = re.search(r'<meta .*;URL=(.*)"\s*', response.text, re.IGNORECASE)
         if match:
             redirect_url = match.group(1)
             redirect_url = redirect_url.strip("'")
@@ -314,6 +347,7 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
             with open("witnesschangeme-error.txt", "a") as file:
                 file.write(f"{url}{f" | {hostname}" if hostname else ""} => {e.__class__.__name__} {e}\n")
                 return
+
 
 
 def main():

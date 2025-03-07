@@ -43,7 +43,8 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
 
 def check(source_code):
-    return "<title>Nexthink console: Login</title>" in source_code
+    return "<title>Nexthink console: Login</title>" in source_code or \
+    "NEXThinkPortal" in source_code
 
 def get_template():
     return {
