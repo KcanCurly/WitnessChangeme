@@ -198,6 +198,10 @@ def check_if_known_Bad(response: requests.Response):
         return "hadoop" # No login page
     if "it works!" in response.text.lower():
         return "it works!" # No login page
+    if "truenas_core_logomark" in response.text.lower():
+        return "TrueNAS" # No default password
+    if "strapi" in response.text.lower():
+        return "Strapi" # No default password
     return None
 
 def check_if_manual(response):
