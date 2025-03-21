@@ -202,6 +202,30 @@ def check_if_known_Bad(response: requests.Response):
         return "TrueNAS" # No default password
     if "strapi" in response.text.lower():
         return "Strapi" # No default password
+    if " <title>Communication Manager</title>" in response.text:
+        return "Crane Communication Manager" # No default password
+    if "crane-cdp.svg" in response.text and "<title>Loyalty - Login</title>":
+        return "Crane CDP" # No default password
+    if '<title ng-bind="mnTitle">Couchbase Server</title>' in response.text:
+        return "Couchbase Server" # No default password
+    if "<title>Business Performance Index - BPI</title>" in response.text:
+        return "Crane BPI" # No default password
+    if "<title>Oracle HTTP Server" in response.text:
+        return "Oracle HTTP Server Homepage" # No login
+    if "Prometheus Time Series Collection and Processing Server" in response.text:
+        return "Prometheus Time Series Collection and Processing Server" # No login
+    if "If you're seeing this, you've successfully installed Tomcat. Congratulations!" in response.text:
+        return "Apache Tomcat Default homepage" # No login
+    if "<title>Eureka</title>" in response.text and "<h1>System Status</h1>" in response.text:
+        return "Eureka" # No login
+    if "<title>Test Page for the Nginx HTTP Server on" in response.text:
+        return "Test Page for the Nginx HTTP Server" # No login 
+    if "<title>Wazuh</title>" in response.text:
+        return "Wazuh" # No default password
+    if "<title>Login | crane CGO</title>" in response.text:
+        return "Crane CGO" # No default password
+    if "<title>Portainer</title>" in response.text:
+        return "Portainer" # No default password
     return None
 
 def check_if_manual(response):
