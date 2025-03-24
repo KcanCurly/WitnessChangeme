@@ -243,6 +243,8 @@ def check_if_manual(response):
         return "DELL EMC ECS => root:ChangeMe emcsecurity:ChangeMe"
     if "<title>Allegro Packets Network Multimeter - Login</title>" in response:
         return "Allegro Packets Network Multimeter => admin:allegro"
+    if "<title>Virtual Appliance Management Infrastructure</title>" in response:
+        return "Avamar => root:avam@r"
     return None
 
 def find_login(response):
