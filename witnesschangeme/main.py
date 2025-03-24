@@ -226,6 +226,8 @@ def check_if_known_Bad(response: requests.Response):
         return "Crane CGO" # No default password
     if "<title>Portainer</title>" in response.text:
         return "Portainer" # No default password
+    if "HELP jvm_info VM version info" in response.text:
+        return "jvm debug"
     return None
 
 def check_if_manual(response):
