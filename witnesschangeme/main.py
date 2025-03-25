@@ -25,18 +25,56 @@ valid_template_lock = threading.Lock()
 known_bads_lock = threading.Lock()
 manual_lock = threading.Lock()
 
-def post_http_status(url):
-    extras_to_try=[
-        "/auth/admin/master/console",
+urls_to_try = [
+    "/auth/admin/master/console",
+    "/admin",
+    "/trust",
+    "/console",
+    "/management",
+    "/em",
+    "/sal",
+    "/analyst",
+    "/mm",
+    "/documents",
+    "/tm",
+    "/trace",
+    "/ping",
+    "/metrics",
+    "/va",
+    "/dms",
+    "/workspace",
+    "/initial",
+    "/features",
+    "/version",
+    "/v2",
+    "/manager",
+    "/export",
+    "/RM",
+    "/health",
+    "/authenticate",
+    "/auth",
+    "/provisioning",
+    "/api",
+    "/request",
+    "/notices",
+    "/captcha",
+    "/logon",
+    "/login",
+    "/mail",
+    "/sms",
+    "/jsp",
+    "/home",
+    "/download",
     ]
-    title = ""
-    for extra in extras_to_try:
-        response = requests.get(url + extra, allow_redirects=True, verify=False, timeout=15)
-        if response.status_code in [200]:
-            if "keycloak" in response:
-                title = "keycloak"
-            return title, url + extra
-    return None, None
+
+def check_if_loginpage_exists(response):
+    try:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        input_fields = soup.find_all('input')
+        has_password = any(field.get('type') == 'password' for field in input_fields)
+        if has_password: return True
+        return False
+    except: return False
 
 def check_if_known_Bad(response: requests.Response):
     for header, value in response.headers.items():
@@ -227,8 +265,19 @@ def check_if_known_Bad(response: requests.Response):
     if "<title>Portainer</title>" in response.text:
         return "Portainer" # No default password
     if "HELP jvm_info VM version info" in response.text:
-        return "jvm debug"
-    return None
+        return "jvm debug" # No login
+    if "<title>Log in | Django site admin</title>" in response.text:
+        return "Django administration" # No default password
+    if '<font color="blue">new </font><font color="black">SALicInterfaceClient</font>' in response.text:
+        return "SALicInterfaceClient" # No login
+    if "<title> Dynamic Workload Console </title>" in response.text:
+        return "IBM Workload Scheduler" # No default password
+    if "<title>DMS Spy</title>" in response.text:
+        return "DMS Spy" # No default password
+    if "<title>Oracle Enterprise Performance Management System Workspace, Fusion Edition</title>" in response.text:
+        return "Oracle Enterprise Performance Management System Workspace, Fusion Edition" # No default password
+    if '<font color="teal">WCFCommunicationInitialMetadataServiceClient</font>' in response.text:
+        return "WCFCommunicationInitialMetadataServiceClient" # No login page
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
@@ -255,11 +304,10 @@ def find_login(response):
     return None
 
 def solve_http_status(url):
-    urls_to_try = ["/admin"]
     for u in urls_to_try:
         response = requests.get(url + u, allow_redirects=True, verify=False, timeout=15)
         if response.status_code in [200]:
-            authcheck(response.url)
+            authcheck(response.url, is_solved=True)
             return
 
 
@@ -277,7 +325,7 @@ def find_title(url, response):
     
     return ""
 
-def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed = False):
+def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed = False, is_solved = False):
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -304,17 +352,8 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         except:pass
 
         if response.status_code >= 400:
-            
-            title, url2 = post_http_status(url)
+            if not is_solved: solve_http_status(url)
 
-            # We find the viable url out of url that returned bad status code
-            if url2:
-                with valid_url_lock:
-                    with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-                        if title != "":
-                            file.write(f"{url2}{f" | {hostname}" if hostname else ""} => {title}\n")
-                        else: file.write(f"{url2}{f" | {hostname}" if hostname else ""}\n")
-                return
             if verbose:
                 print(f"{url} => {response.status_code}")
             with error_lock:
@@ -381,9 +420,8 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
 
         with valid_url_lock:
             with open("witnesschangeme-valid-url-no-template.txt", "a") as file:
-                if title != "":
-                    file.write(f"{url} => {title}\n")
-                else: file.write(f"{url}\n")
+                lin = check_if_loginpage_exists(response.text)
+                file.write(f"{url}{f" => {title}" if title else ""}{f" (Login)" if lin else ""}\n")
                 return
 
     except TimeoutError as timeout:
