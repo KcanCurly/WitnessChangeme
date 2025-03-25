@@ -254,6 +254,15 @@ def find_login(response):
         return "/ui/#/login"
     return None
 
+def solve_http_status(url):
+    urls_to_try = ["/admin"]
+    for u in urls_to_try:
+        response = requests.get(url + u, allow_redirects=True, verify=False, timeout=15)
+        if response.status_code in [200]:
+            authcheck(response.url)
+            return
+
+
 # TO DO:
 def find_title(url, response):
     soup = BeautifulSoup(response, 'html.parser')
@@ -342,12 +351,17 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => GRAFANA NO AUTH\n")
-        print(f"{url}{f" | {hostname}" if hostname else ""} => GRAFANA NO AUTH")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => Grafana NO AUTH")
     if "Loading Elastic" in response.text and "spaces/space_selector" in response.url:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url} => ELASTIC NO AUTH\n")
-        print(f"{url}{f" | {hostname}" if hostname else ""} => ELASTIC NO AUTH")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => Elastic NO AUTH")
+    if "WebSphere Integrated Solutions Console" in response.text and "Password" not in response.text:
+        with valid_lock:
+            with open("witnesschangeme-valid.txt", "a") as file:
+                file.write(f"{url} => WebSphere Integrated Solutions Console NO AUTH\n")
+        print(f"{url}{f" | {hostname}" if hostname else ""} => WebSphere Integrated Solutions Console NO AUTH")
 
 
     try:
