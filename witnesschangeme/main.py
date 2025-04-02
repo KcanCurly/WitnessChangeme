@@ -313,8 +313,7 @@ def solve_http_status(url):
     for u in urls_to_try:
         response = requests.get(url + u, allow_redirects=True, verify=False, timeout=15)
         if response.status_code in [200]:
-            authcheck(response.url, is_solved=True)
-            return
+            return response.url
 
 
 # TO DO:
@@ -358,7 +357,11 @@ def authcheck(url, templates, verbose, error_lock, valid_lock, valid_url_lock, v
         except:pass
 
         if response.status_code >= 400:
-            if not is_solved: solve_http_status(url)
+            if not is_solved: 
+                zz = solve_http_status(url)
+                if zz: 
+                    authcheck(zz, templates, verbose, error_lock, valid_lock, valid_url_lock, valid_template_lock, bads_lock, wasprocessed, True)
+                    return
 
             if verbose:
                 print(f"{url} => {response.status_code}")
