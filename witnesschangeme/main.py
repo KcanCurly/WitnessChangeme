@@ -278,6 +278,12 @@ def check_if_known_Bad(response: requests.Response):
         return "Oracle Enterprise Performance Management System Workspace, Fusion Edition" # No default password
     if '<font color="teal">WCFCommunicationInitialMetadataServiceClient</font>' in response.text:
         return "WCFCommunicationInitialMetadataServiceClient" # No login page
+    if "<title>cAdvisor" in response.text:
+        return "cAdvisor" # No login page
+    if "<title>Graylog Web Interface</title>" in response.text:
+        return "Graylog Web Interface" # No default password
+    if '"NAME":"CentOS Linux","ID":"centos"' in response.text:
+        return "CentOS Web Interface" # No default password
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
