@@ -19,7 +19,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
             hostname, _, _ = socket.gethostbyaddr(ip)
     except:pass
 
-    if not "ncorrect user name or password or account is temporarily blocked" in res.text:
+    if "Incorrect user name or password or account is temporarily blocked" not in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url}{f" | {hostname}" if hostname else ""} => ZABBIX => {username}:{password}\n")
