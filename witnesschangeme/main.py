@@ -284,6 +284,8 @@ def check_if_known_Bad(response: requests.Response):
         return "Graylog Web Interface" # No default password
     if '"NAME":"CentOS Linux","ID":"centos"' in response.text:
         return "CentOS Web Interface" # No default password
+    if "<p>If you see this page, the nginx web server is successfully installed and" in response.text:
+        return "Nginx default page" # No default password
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
