@@ -288,6 +288,8 @@ def check_if_known_Bad(response: requests.Response):
         return "Nginx default page" # No default password
     if response.url.endswith("metrics"):
         return "Metric page" # No default password
+    if "<title>Redis Exporter" in response.text:
+        return "Redis Exporter" # No default password
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
