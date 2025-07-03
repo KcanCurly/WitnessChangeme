@@ -4,7 +4,7 @@ import socket
 
 def verify_login(url, valid_lock, valid_template_lock, verbose = False):
     found = False
-    res = requests.post(url + "/handlesignin", verify=False, data={"username":"admin", "password":"admin"})
+    res = requests.post(url + "/handlesignin", verify=False, data={"username":"admin", "password":"admin"}, allow_redirects=False)
 
     hostname = None
     try:
