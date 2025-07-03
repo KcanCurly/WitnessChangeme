@@ -65,6 +65,7 @@ urls_to_try = [
     "/jsp",
     "/home",
     "/download",
+    "/endpoint",
     ]
 
 def check_if_loginpage_exists(response):
@@ -285,11 +286,29 @@ def check_if_known_Bad(response: requests.Response):
     if '"NAME":"CentOS Linux","ID":"centos"' in response.text:
         return "CentOS Web Interface" # No default password
     if "<p>If you see this page, the nginx web server is successfully installed and" in response.text:
-        return "Nginx default page" # No default password
+        return "Nginx default page" # No login
     if response.url.endswith("metrics"):
-        return "Metric page" # No default password
+        return "Metric page" # No login
     if "<title>Redis Exporter" in response.text:
-        return "Redis Exporter" # No default password
+        return "Redis Exporter" # No login
+    if "<title>Integration Server Administrator</title>" in response.text:
+        return "Integration Server Administrator" # No default password
+    if "<head><title>Kafka Exporter</title></head>" in response.text:
+        return "Kafka Exporter" # No login
+    if "<title>MongoDB exporter</title>" in response.text:
+        return "MongoDB Exporter" # No login
+    if "<head><title>Couchbase Exporter</title></head>" in response.text:
+        return "Couchbase Exporter" # No login
+    if "<head><title>Prometheus Java Client</title></head>" in response.text:
+        return "Prometheus Java Client" # No login
+    if "<head><title>Elasticsearch Exporter</title></head>" in response.text:
+        return "Elasticsearch Exporter" # No login
+    if "<title>Statistics Report for HAProxy</title>" in response.text:
+        return "Statistics Report for HAProxy" # No login
+    if "<title>Postgres Exporter</title>" in response.text:
+        return "Postgres Exporter" # No login
+    if "<title>windows_exporter</title>" in response.text:
+        return "windows_exporter" # No login
 
 def check_if_manual(response):
     if "Sign in to RStudio" in response:
