@@ -18,7 +18,7 @@ def verify_login(url, valid_lock, valid_template_lock, verbose = False):
 
             hostname, _, _ = socket.gethostbyaddr(ip)
     except:pass
-    if not "Kullanıc adı veya şifreyi hatalı girdiniz" in res.text:
+    if not "Kullanıcı adı veya şifreyi hatalı girdiniz" in res.text:
         with valid_lock:
             with open("witnesschangeme-valid.txt", "a") as file:
                 file.write(f"{url}{f" | {hostname}" if hostname else ""} => Logparse => {username}:{password}\n")
