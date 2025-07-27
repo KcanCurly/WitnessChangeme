@@ -1,6 +1,5 @@
 import argparse
 import importlib.resources
-import importlib.resources.simple
 import os
 import importlib.util
 import importlib
